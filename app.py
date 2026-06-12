@@ -30,6 +30,7 @@ from src.tools import (TOOL_CALL_LOG, TOOL_PERMISSIONS, get_customer,
 from src.fraud_engine import RISK_THRESHOLD
 from src.identity import valid_eid_format
 from src import case_store
+from src.i18n import detect_language, dir_for, language_name, t
 
 ADMIN_CODE = "tamkeen-staff"   # demo staff access code (see DEMO_LOGINS.txt)
 
@@ -63,22 +64,29 @@ st.markdown("""
 .pill-red{background:#fde8e8;color:#b91c1c}.pill-green{background:#e7f6ec;color:#137333}
 .pill-amber{background:#fff4e5;color:#b25e00}.pill-grey{background:#eef0f3;color:#444}
 .refnum{font-family:monospace;background:#f1f3f5;padding:2px 6px;border-radius:6px}
+.rtl-scope{direction:rtl;text-align:right;font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+.rtl-scope .dot{margin-right:0;margin-left:9px}
+.rtl-scope .card{border-left:1px solid #e7e9ee;border-right:5px solid #98a2b3}
+.rtl-scope .card-amber{border-right-color:#f59e0b}.rtl-scope .card-green{border-right-color:#16a34a}
+.rtl-scope .card-blue{border-right-color:#2563eb}.rtl-scope .card-red{border-right-color:#dc2626}
+.rtl-scope .card-grey{border-right-color:#98a2b3}
+.ltr-token{direction:ltr;unicode-bidi:isolate;display:inline-block}
 </style>
 """, unsafe_allow_html=True)
 
 FRIENDLY_STEPS = [
-    ("triage", "Understanding your request"),
-    ("identity_verification", "Confirming your identity"),
-    ("evidence_retrieval", "Looking up your order and payments"),
-    ("senior_support", "Checking senior-safe support needs"),
-    ("fraud_risk", "Running a quick security check"),
-    ("policy", "Applying our refund policy"),
-    ("legal_grounding", "Checking UAE Consumer Protection Law"),
-    ("decision", "Reaching a decision"),
-    ("human_approval", "Human reviewer sign-off"),
-    ("prepare_remedy", "Preparing your resolution"),
-    ("execute_refund", "Issuing your refund"),
-    ("audit_logger", "Wrapping up"),
+    ("triage", "step_triage"),
+    ("identity_verification", "step_identity"),
+    ("evidence_retrieval", "step_evidence"),
+    ("senior_support", "step_senior"),
+    ("fraud_risk", "step_fraud"),
+    ("policy", "step_policy"),
+    ("legal_grounding", "step_legal"),
+    ("decision", "step_decision"),
+    ("human_approval", "step_human"),
+    ("prepare_remedy", "step_prepare"),
+    ("execute_refund", "step_execute"),
+    ("audit_logger", "step_audit"),
 ]
 
 
@@ -91,9 +99,30 @@ def card(kind, headline, body):
                 f'<div>{body}</div></div>', unsafe_allow_html=True)
 
 
+def ltr(value):
+    return f'<span class="ltr-token">{value}</span>'
+
+
+def apply_customer_direction(lang):
+    direction = dir_for(lang)
+    align = "right" if direction == "rtl" else "left"
+    st.markdown(
+        f"""
+        <style>
+        .block-container{{direction:{direction};text-align:{align}}}
+        .block-container [data-testid="stMetricValue"],
+        .block-container [data-testid="stDataFrame"],
+        .block-container .refnum{{direction:ltr;text-align:left}}
+        {'.block-container .dot{margin-right:0;margin-left:9px}' if direction == 'rtl' else ''}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def fmt_when(value):
     if not value:
-        return "not scheduled"
+        return t("not_scheduled")
     try:
         dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
         gst = dt.astimezone(timezone(timedelta(hours=4)))
@@ -105,17 +134,18 @@ def fmt_when(value):
 def render_status_assurance(state, *, staff=False):
     if not state.customer_waiting_message:
         return
+    lang = getattr(state, "language", "en") if not staff else "en"
     rows = [
-        ("Owner", state.assigned_owner or "Customer care"),
-        ("Next update by", fmt_when(state.next_update_at)),
-        ("SLA due", fmt_when(state.sla_due_at)),
-        ("Status", (state.sla_status or "on_track").replace("_", " ")),
-        ("Appeal path", "Available" if state.appeal_available else "Not needed right now"),
+        (t("owner", lang), state.assigned_owner or "Customer care"),
+        (t("next_update_by", lang), ltr(fmt_when(state.next_update_at))),
+        (t("sla_due", lang), ltr(fmt_when(state.sla_due_at))),
+        (t("status", lang), t("status_" + (state.sla_status or "on_track"), lang)),
+        (t("appeal_path", lang), t("available" if state.appeal_available else "not_needed", lang)),
     ]
     body = state.customer_waiting_message + "<br><br>" + "<br>".join(
         f"<b>{label}:</b> {value}" for label, value in rows
     )
-    card("blue" if not staff else "grey", "Status assurance", body)
+    card("blue" if not staff else "grey", t("status_assurance", lang), body)
     if staff and state.follow_up_events:
         st.markdown("**Follow-up action log:**")
         st.dataframe(
@@ -125,45 +155,43 @@ def render_status_assurance(state, *, staff=False):
         )
 
 
-def render_senior_support(state):
+def render_senior_support(state, *, staff=False):
     if not (state.senior_mode_enabled or state.is_senior):
         return
+    lang = "en" if staff else getattr(state, "language", "en")
     rows = [
-        ("Senior-safe mode", "Enabled" if state.senior_mode_enabled else "Not requested"),
-        ("Senior customer", "Yes" if state.is_senior else "Not declared"),
-        ("Preferred language", state.preferred_language or "English"),
-        ("Caregiver updates", "Authorized" if state.caregiver_authorized else "Not authorized"),
+        (t("senior_safe_mode", lang), t("enabled" if state.senior_mode_enabled else "not_requested", lang)),
+        (t("senior_customer", lang), t("yes" if state.is_senior else "not_declared", lang)),
+        (t("detected_language", lang), language_name(getattr(state, "language", "en"))),
+        (t("caregiver_updates", lang), t("authorized" if state.caregiver_authorized else "not_authorized", lang)),
     ]
     if state.caregiver_authorized:
         rows.extend([
-            ("Caregiver", state.caregiver_name or "not provided"),
-            ("Relationship", state.caregiver_relationship or "not provided"),
-            ("Caregiver phone", state.caregiver_phone or "not provided"),
+            (t("caregiver", lang), state.caregiver_name or t("not_provided", lang)),
+            (t("relationship", lang), state.caregiver_relationship or t("not_provided", lang)),
+            (t("caregiver_phone", lang), ltr(state.caregiver_phone or t("not_provided", lang))),
         ])
     if state.senior_protection_flags:
-        rows.append(("Protection flags", ", ".join(
+        rows.append((t("protection_flags", lang), ", ".join(
             flag.replace("_", " ").title() for flag in state.senior_protection_flags)))
     body = "<br>".join(f"<b>{label}:</b> {value}" for label, value in rows)
     if state.senior_protection_summary:
         body += f"<br><br>{state.senior_protection_summary}"
-    card("amber" if state.senior_protection_flags else "blue", "Senior-safe support", body)
+    card("amber" if state.senior_protection_flags else "blue", t("senior_safe_support", lang), body)
 
 
 # ----------------------------------------------------------- customer-facing UI
-def render_chat(message, notice):
-    st.markdown(f'<div class="muted">You</div><span class="you">{message}</span>',
+def render_chat(message, notice, lang="en"):
+    st.markdown(f'<div class="muted">{t("you", lang)}</div><span class="you">{message}</span>',
                 unsafe_allow_html=True)
     if notice:
         clean = notice.startswith("[Reply unavailable")
         if clean:
-            st.markdown('<div class="muted" style="margin-top:10px">Support assistant</div>',
+            st.markdown(f'<div class="muted" style="margin-top:10px">{t("support_assistant", lang)}</div>',
                         unsafe_allow_html=True)
-            card("grey", "Reply could not be generated",
-                 "The OpenAI API is not reachable yet, so the worded reply is unavailable. "
-                 "The decision below is still fully computed. Add a valid OpenAI key "
-                 "(OPENAI_API_KEY=sk-...) to .env to see the friendly message.")
+            card("grey", t("reply_unavailable_title", lang), t("reply_unavailable_body", lang))
         else:
-            st.markdown('<div class="muted" style="margin-top:10px">Support assistant</div>'
+            st.markdown(f'<div class="muted" style="margin-top:10px">{t("support_assistant", lang)}</div>'
                         f'<span class="bot">{notice}</span>', unsafe_allow_html=True)
 
 
@@ -171,7 +199,9 @@ def render_progress(state):
     visited = {e.node_name for e in state.audit_events}
     current = state.current_step
     out = []
-    for node, label in FRIENDLY_STEPS:
+    lang = getattr(state, "language", "en")
+    for node, label_key in FRIENDLY_STEPS:
+        label = t(label_key, lang)
         if node in ("human_approval", "prepare_remedy", "execute_refund") and node not in visited:
             continue
         if node == current and state.human_approval_status == "PENDING" and node == "human_approval":
@@ -182,27 +212,21 @@ def render_progress(state):
 
 
 def customer_card(state):
+    lang = getattr(state, "language", "en")
     hs = state.human_approval_status
     pkg = state.refund_package
     if hs == "PENDING":
-        card("amber", "We are taking a closer look",
-             "To protect your account, one of our specialists is reviewing your request. "
-             "You do not need to do anything. We will follow up shortly.")
+        card("amber", t("pending_title", lang), t("pending_body", lang))
     elif hs == "REJECTED":
-        card("red", "We could not approve this request",
-             "After a careful review we were unable to approve a refund for this case. "
-             "If you have more information, please reply and we will take another look.")
+        card("red", t("rejected_title", lang), t("rejected_body", lang))
     elif pkg is not None and pkg.status == "EXECUTED":
-        card("green", "Your refund is on its way",
-             f"A refund of <b>{pkg.currency} {pkg.amount:,.2f}</b> has been approved and "
-             "issued to your original payment method.")
+        card("green", t("refund_executed_title", lang),
+             t("refund_executed_body", lang, amount=ltr(f"{pkg.currency} {pkg.amount:,.2f}")))
     elif pkg is not None:
-        card("green", "Your refund has been approved",
-             f"A refund of <b>{pkg.currency} {pkg.amount:,.2f}</b> has been prepared and "
-             "will be issued to your original payment method.")
+        card("green", t("refund_prepared_title", lang),
+             t("refund_prepared_body", lang, amount=ltr(f"{pkg.currency} {pkg.amount:,.2f}")))
     else:
-        card("blue", "Here is what we found",
-             "Good news. There is nothing to refund. See the explanation above.")
+        card("blue", t("no_refund_title", lang), t("no_refund_body", lang))
     render_status_assurance(state)
 
 
@@ -298,7 +322,7 @@ def behind_the_scenes(state, tool_log, payments_view=False):
             render_signals(state)
         with c2:
             render_policy(state)
-        render_senior_support(state)
+        render_senior_support(state, staff=True)
         render_legal(state, show_text=True)
         render_tool_calls(tool_log)
         if state.refund_package:
@@ -349,7 +373,7 @@ def render_fraud(state):
     with c2:
         card(color, f"Pattern detected: {state.fraud_typology}",
              f"<b>Recommended action:</b> {state.fraud_recommendation}")
-    render_senior_support(state)
+    render_senior_support(state, staff=True)
     st.markdown("**Fraud signals and the evidence behind each one:**")
     st.dataframe([{"signal": s.code, "fired": "FIRED" if s.present else "no",
                    "weight": s.weight, "evidence": s.evidence or s.description}
@@ -386,21 +410,21 @@ digraph G {
 
 # ----------------------------------------------------------------- CUSTOMER PAGE
 def customer_page(outage):
-    st.markdown('<p class="title">Help Center: Payments and Refunds</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub">Confirm it is really you, tell us what went wrong, and our '
-                'assistant will look into it. A person signs off before any money moves.</p>',
-                unsafe_allow_html=True)
-    st.caption("Built for UAE residents who need clear refund timelines, especially for high-cost flights, electronics, telecom, utilities, and marketplace purchases.")
+    existing_rec = case_store.get(st.session_state.get("case", ""))
+    existing_state = existing_rec["state"] if existing_rec else st.session_state.get("help_state")
+    lang = getattr(existing_state, "language", detect_language(st.session_state.get("msg_main", "")))
+    apply_customer_direction(lang)
+    st.markdown(f'<p class="title">{t("page_title", lang)}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="sub">{t("page_sub", lang)}</p>', unsafe_allow_html=True)
+    st.caption(t("page_caption", lang))
 
     # ---- Step 1: identity verification (resolves which customer this is) ----
     if not st.session_state.get("verified"):
-        card("blue", "Step 1: Verify your identity",
-             "Before we look at any order or payment, please confirm who you are. "
-             "This is a mocked UAE PASS / Emirates ID step.")
-        eid = st.text_input("Emirates ID (784-YYYY-NNNNNNN-N)", key="eid_in",
+        card("blue", t("verify_step_title", lang), t("verify_step_body", lang))
+        eid = st.text_input(t("eid_label", lang), key="eid_in",
                             placeholder="784-YYYY-NNNNNNN-N")
         col1, col2 = st.columns([1, 1])
-        if col1.button("Send OTP", key="send_otp"):
+        if col1.button(t("send_otp", lang), key="send_otp"):
             cid_lookup, c_lookup = customer_by_eid(eid)
             if cid_lookup:
                 st.session_state.otp = f"{random.randint(0, 999999):06d}"
@@ -410,15 +434,13 @@ def customer_page(outage):
                 st.session_state.pop("otp", None)
                 st.session_state.otp_error = True
         if st.session_state.get("otp_error") and not st.session_state.get("otp"):
-            card("red", "Emirates ID not recognized",
-                 "We could not find an account for that Emirates ID.")
+            card("red", t("eid_not_recognized_title", lang), t("eid_not_recognized_body", lang))
         otp = st.session_state.get("otp")
         if otp:
-            col2.markdown(f'<div class="card card-grey">Mock SMS to '
-                          f'{st.session_state.get("otp_phone","")} . demo code <b>{otp}</b></div>',
+            col2.markdown(f'<div class="card card-grey">{t("mock_sms", lang, phone=ltr(st.session_state.get("otp_phone","")), otp=ltr(otp))}</div>',
                           unsafe_allow_html=True)
-        otp_in = st.text_input("Enter the 6-digit code", key="otp_in", max_chars=6, disabled=not otp)
-        if st.button("Verify identity", type="primary", use_container_width=True, disabled=not otp):
+        otp_in = st.text_input(t("otp_label", lang), key="otp_in", max_chars=6, disabled=not otp)
+        if st.button(t("verify_identity", lang), type="primary", use_container_width=True, disabled=not otp):
             cid, _ = customer_by_eid(eid)
             eid_ok = valid_eid_format(eid) and cid is not None
             otp_ok = bool(otp) and otp_in.strip() == otp
@@ -429,18 +451,17 @@ def customer_page(outage):
                 st.session_state.pop("otp_error", None)
                 st.rerun()
             elif not eid_ok:
-                card("red", "Could not verify",
-                     "That Emirates ID does not match any account or is malformed.")
+                card("red", t("could_not_verify_title", lang), t("could_not_verify_body", lang))
             else:
-                card("red", "Incorrect code", "Tap Send OTP and use the demo code shown.")
+                card("red", t("incorrect_code_title", lang), t("incorrect_code_body", lang))
         return
 
     # ---- Step 2: one box for any issue ----
     cid = st.session_state.customer_id
     cust = get_customer(cid) or {}
-    card("green", "Identity verified",
-         f"Welcome back, <b>{cust.get('name', cid)}</b>. How can we help you today?")
-    if st.button("Not you? Switch identity"):
+    card("green", t("identity_verified_title", lang),
+         t("identity_verified_body", lang, name=cust.get("name", cid)))
+    if st.button(t("switch_identity", lang)):
         for k in ("verified", "customer_id", "factors", "otp", "case", "help_state",
                   "is_senior", "senior_mode_enabled", "preferred_language",
                   "caregiver_authorized", "caregiver_name", "caregiver_relationship",
@@ -449,27 +470,19 @@ def customer_page(outage):
         st.rerun()
 
     default_senior = bool(cust.get("senior_eligible"))
-    card("blue", "Optional: senior-safe support",
-         "Use this if you are a senior citizen or helping an older family member. "
-         "It makes the case easier to follow and lets us protect against scam pressure.")
+    card("blue", t("senior_optional_title", lang), t("senior_optional_body", lang))
     is_senior = st.checkbox(
-        "I am a senior citizen / helping a senior",
+        t("senior_checkbox", lang),
         value=st.session_state.get("is_senior", default_senior),
         key="is_senior",
     )
     senior_mode_enabled = st.checkbox(
-        "Use simpler explanations and extra account protection",
+        t("senior_mode_checkbox", lang),
         value=st.session_state.get("senior_mode_enabled", default_senior),
         key="senior_mode_enabled",
     )
-    preferred_language = st.selectbox(
-        "Preferred explanation language",
-        ["English", "Arabic"],
-        index=0 if st.session_state.get("preferred_language", "English") == "English" else 1,
-        key="preferred_language",
-    )
     caregiver_authorized = st.checkbox(
-        "Authorize a trusted caregiver or family member to receive case updates",
+        t("caregiver_checkbox", lang),
         value=st.session_state.get("caregiver_authorized", bool(cust.get("caregiver_authorized"))),
         key="caregiver_authorized",
     )
@@ -477,26 +490,26 @@ def customer_page(outage):
     if caregiver_authorized:
         c1, c2 = st.columns(2)
         caregiver_name = c1.text_input(
-            "Caregiver name",
+            t("caregiver_name", lang),
             value=st.session_state.get("caregiver_name", cust.get("caregiver_name", "")),
             key="caregiver_name",
         )
         caregiver_relationship = c2.text_input(
-            "Relationship",
+            t("relationship", lang),
             value=st.session_state.get("caregiver_relationship", cust.get("caregiver_relationship", "")),
             key="caregiver_relationship",
         )
         caregiver_phone = st.text_input(
-            "Caregiver phone",
+            t("caregiver_phone", lang),
             value=st.session_state.get("caregiver_phone", cust.get("caregiver_phone", "")),
             key="caregiver_phone",
         )
 
-    st.markdown("**Tell us what happened, in your own words:**")
+    st.markdown(f"**{t('message_prompt', lang)}**")
     msg = st.text_area("Your message", key="msg_main", label_visibility="collapsed",
-                       placeholder=("Example: Someone called me and sent a payment link, "
-                                    "saying my account will be blocked unless I pay now."
-                                    if senior_mode_enabled else "Type your issue here."))
+                       placeholder=(t("placeholder_senior", lang)
+                                    if senior_mode_enabled else t("placeholder_default", lang)))
+    lang = detect_language(msg)
 
     f = st.session_state.factors
     run_kwargs = dict(
@@ -504,14 +517,13 @@ def customer_page(outage):
         customer_id=cid, order_id=order_for_customer(cid), customer_message=msg,
         provided_emirates_id=f["emirates_id"], otp_verified=f["otp_verified"],
         is_senior=is_senior, senior_mode_enabled=senior_mode_enabled,
-        preferred_language=preferred_language,
         caregiver_authorized=caregiver_authorized,
         caregiver_name=caregiver_name, caregiver_relationship=caregiver_relationship,
         caregiver_phone=caregiver_phone,
         simulate_failures={"get_order"} if outage else None)
     st.session_state.case = run_kwargs["case_id"]
 
-    if st.button("Submit request", type="primary", use_container_width=True, disabled=not msg.strip()):
+    if st.button(t("submit_request", lang), type="primary", use_container_width=True, disabled=not msg.strip()):
         s = run_case(**run_kwargs)
         case_store.upsert(s.case_id, state=s, run_kwargs=run_kwargs,
                           customer_name=cust.get("name", cid), issue=s.issue_type)
@@ -522,23 +534,24 @@ def customer_page(outage):
     rec = case_store.get(st.session_state.get("case", ""))
     s = rec["state"] if rec else st.session_state.get("help_state")
     if s:
+        lang = getattr(s, "language", lang)
         st.divider()
         show_reply = s.human_approval_status != "PENDING"
-        render_chat(s.customer_message, s.customer_notice if show_reply else None)
+        render_chat(s.customer_message, s.customer_notice if show_reply else None, lang)
         st.write("")
         render_senior_support(s)
         customer_card(s)
         if s.human_approval_status == "PENDING":
-            st.caption("Your request is with our review team. This page updates when they decide.")
-            if st.button("Refresh status"):
+            st.caption(t("pending_caption", lang))
+            if st.button(t("refresh_status", lang)):
                 st.rerun()
         if s.legal_basis:
-            st.markdown(f'<div class="card card-grey"><b>Your rights:</b> this outcome is '
-                        f'grounded in the {s.legal_source}. {s.legal_basis}</div>',
+            st.markdown(f'<div class="card card-grey"><b>{t("rights_prefix", lang)}</b> '
+                        f'{t("rights_body", lang, source=s.legal_source, basis=s.legal_basis)}</div>',
                         unsafe_allow_html=True)
-        st.markdown('<div class="muted">Progress</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="muted">{t("progress", lang)}</div>', unsafe_allow_html=True)
         render_progress(s)
-        st.caption(f"Reference: {s.case_id}")
+        st.caption(t("reference", lang, case_id=s.case_id))
 
 
 # -------------------------------------------------------------------- STAFF PAGE
@@ -577,6 +590,7 @@ def staff_page():
 
         st.markdown("**Queue** (newest first; PENDING_REVIEW needs your decision):")
         st.dataframe([{"case": c["case_id"], "customer": c["customer_name"], "issue": c["issue"],
+                       "language": language_name(getattr(c["state"], "language", "en")),
                        "risk": c["state"].risk_score, "band": c["state"].fraud_band,
                        "senior support": "yes" if c["state"].senior_mode_enabled else "",
                        "caregiver": "authorized" if c["state"].caregiver_authorized else "",
@@ -592,6 +606,7 @@ def staff_page():
 
         st.divider()
         st.markdown(f"### Case {s.case_id}: {rec['customer_name']}")
+        st.caption(f"Customer language: {language_name(getattr(s, 'language', 'en'))}")
         render_fraud(s)
 
         with st.expander("Evidence pack (identity, payments, policy, law)", expanded=False):
@@ -645,7 +660,8 @@ def staff_page():
             st.info("Open a case in the queue first.")
         else:
             st.markdown(f"**Case:** `{s.case_id}` . customer `{s.customer_id}` . "
-                        f"issue `{s.issue_type}` . policy `{s.policy_version}`")
+                        f"issue `{s.issue_type}` . language `{language_name(getattr(s, 'language', 'en'))}` . "
+                        f"policy `{s.policy_version}`")
             render_audit_table(s)
             with st.expander("Raw JSON (final state and tool-call log)"):
                 st.json({"final_state": json.loads(s.model_dump_json()),

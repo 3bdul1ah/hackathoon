@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Speech Input Boundary</title>
+  </head>
+  <body>
+    <button id="listen" type="button">Start speech input</button>
+    <p id="status" aria-live="polite"></p>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const language = params.get("language") === "ar" ? "ar-AE" : "en-US";
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const status = document.getElementById("status");
+      const button = document.getElementById("listen");
+
+      if (!SpeechRecognition) {
+        button.disabled = true;
+        status.textContent = "Browser speech recognition is not available.";
+      } else {
+        const recognition = new SpeechRecognition();
+        recognition.lang = language;
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        button.addEventListener("click", () => {
+          status.textContent = "Listening...";
+          recognition.start();
+        });
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          status.textContent = transcript;
+          window.parent.postMessage({ type: "speech-transcript", transcript }, "*");
+        };
+
+        recognition.onerror = (event) => {
+          status.textContent = `Speech recognition failed: ${event.error}`;
+        };
+      }
+    </script>
+  </body>
+</html>

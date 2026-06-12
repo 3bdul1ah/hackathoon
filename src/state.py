@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 
 from pydantic import BaseModel, Field
 
+from .i18n import Language
+
 
 def utcnow_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -156,6 +158,7 @@ class CaseState(BaseModel):
     # --- senior-safe support / caregiver consent ---
     is_senior: bool = False
     senior_mode_enabled: bool = False
+    language: Language = "en"
     preferred_language: str = "English"
     caregiver_authorized: bool = False
     caregiver_name: Optional[str] = None

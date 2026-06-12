@@ -31,6 +31,46 @@ from .notice import generate_notice
 from .identity import verify as identity_verify
 from .status_assurance import compute_status_assurance
 from .senior_support import analyze_message
+from .i18n import detect_language, language_name
+
+
+_DUPLICATE_PHRASES = (
+    "twice",
+    "duplicate",
+    "charged two",
+    "two charges",
+    "charged twice",
+    "دفعت مرتين",
+    "خصم مرتين",
+    "خصم المبلغ مرتين",
+    "تم خصم مرتين",
+    "تم خصم المبلغ مرتين",
+    "اتخصم مرتين",
+    "رسوم مكررة",
+    "عملية مكررة",
+    "مدفوع مرتين",
+    "دفعة مكررة",
+    "شحنت مرتين",
+)
+
+_NOT_RECEIVED_PHRASES = (
+    "never received",
+    "not received",
+    "didn't arrive",
+    "did not arrive",
+    "never arrived",
+    "لم أستلم",
+    "لم استلم",
+    "ما استلمت",
+    "لم يصل",
+    "ما وصل",
+    "لم تصل",
+    "لم يصلني",
+    "لم تصلني",
+    "الطلب لم يصل",
+    "لم استلم طلبي",
+    "لم أستلم طلبي",
+)
 
 
 
@@ -52,9 +92,9 @@ def triage_node(state: CaseState) -> dict[str, Any]:
     # log; it never alters routing or policy.
     injected, phrase = scan(state.customer_message)
 
-    if "twice" in msg or "duplicate" in msg or "charged two" in msg or "two charges" in msg:
+    if any(phrase in msg for phrase in _DUPLICATE_PHRASES):
         issue = "duplicate_charge"
-    elif "never received" in msg or "not received" in msg or "didn't arrive" in msg or "did not arrive" in msg:
+    elif any(phrase in msg for phrase in _NOT_RECEIVED_PHRASES):
         issue = "item_not_received"
     else:
         issue = "unknown"
@@ -436,6 +476,7 @@ def prepare_remedy_node(state: CaseState) -> dict[str, Any]:
                     "audit_events": events}
 
         notice = generate_notice("PREPARE_REFUND", amount=pkg.amount, currency=pkg.currency,
+                                 language=state.language,
                                  context=f"{d.reason} {state.legal_basis or ''}")
         replay = " (idempotent replay, no duplicate)" if pkg.idempotent_replay else ""
         outcome = f"Refund package {pkg.refund_id} prepared (status {pkg.status}){replay}."
@@ -454,6 +495,7 @@ def prepare_remedy_node(state: CaseState) -> dict[str, Any]:
 
     # EXPLAIN_NO_REFUND path (e.g. authorization hold mistaken for a duplicate).
     notice = generate_notice("EXPLAIN_NO_REFUND",
+                             language=state.language,
                              context=f"{d.reason if d else ''} {state.legal_basis or ''}")
     outcome = "No refund owed; explanation issued to customer."
     events.append(_ev(
@@ -518,10 +560,10 @@ def audit_logger_node(state: CaseState) -> dict[str, Any]:
     outcome = state.final_outcome
 
     if state.human_approval_status == "PENDING":
-        notice = generate_notice("ROUTE_TO_HUMAN_REVIEW")
+        notice = generate_notice("ROUTE_TO_HUMAN_REVIEW", language=state.language)
         outcome = "Case paused, awaiting human reviewer. NO refund executed."
     elif state.human_approval_status == "REJECTED":
-        notice = generate_notice("ROUTE_TO_HUMAN_REVIEW")
+        notice = generate_notice("ROUTE_TO_HUMAN_REVIEW", language=state.language)
         outcome = "Reviewer rejected the refund. NO refund executed."
 
     assured_state = state.model_copy(update={
@@ -630,6 +672,7 @@ def run_case(case_id: str, customer_id: str, order_id: str | None,
     tools.SIMULATE_FAILURES.clear()
     if simulate_failures:
         tools.SIMULATE_FAILURES.update(simulate_failures)
+    language = detect_language(customer_message)
 
     initial = CaseState(
         case_id=case_id,
@@ -642,7 +685,8 @@ def run_case(case_id: str, customer_id: str, order_id: str | None,
         otp_verified=otp_verified,
         is_senior=is_senior,
         senior_mode_enabled=senior_mode_enabled,
-        preferred_language=preferred_language,
+        language=language,
+        preferred_language=language_name(language),
         caregiver_authorized=caregiver_authorized,
         caregiver_name=caregiver_name,
         caregiver_relationship=caregiver_relationship,

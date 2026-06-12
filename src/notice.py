@@ -52,13 +52,20 @@ def _client_and_model():
 
 
 def generate_notice(action: str, *, amount: float | None = None,
-                    currency: str = "AED", context: str = "") -> str:
+                    currency: str = "AED", context: str = "",
+                    language: str = "en") -> str:
     """Generate the customer reply via OpenAI. No offline fallback."""
     client, model, err = _client_and_model()
     if err:
         return f"[Reply unavailable: {err}. Add a valid OpenAI key (sk-...) to .env.]"
 
     brief = _decision_brief(action, amount=amount, currency=currency)
+    output_language = (
+        "Write the customer message in Modern Standard Arabic only. Keep product IDs, "
+        "case IDs, currency codes, and amounts as written when needed."
+        if language == "ar"
+        else "Write the customer message in English only."
+    )
     try:
         resp = client.chat.completions.create(
             model=model,
@@ -76,7 +83,7 @@ def generate_notice(action: str, *, amount: float | None = None,
                         "customer of fraud; never promise a refund the Decision "
                         "does not state. Write in plain sentences and do not use "
                         "any dashes (no '-', '--' or '—'); use commas, periods, or "
-                        "colons instead."
+                        "colons instead. " + output_language
                     ),
                 },
                 {
