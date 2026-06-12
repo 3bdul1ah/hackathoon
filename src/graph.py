@@ -21,7 +21,7 @@ from typing import Any
 from langgraph.graph import StateGraph, END
 
 from .state import (
-    CaseState, AuditEvent, Evidence, PolicyDecision, LawCitation, utcnow_iso,
+    CaseState, AuditEvent, Evidence, PolicyDecision, LawCitation, RiskSignal, utcnow_iso,
 )
 from . import tools
 from .fraud_engine import compute_risk, RISK_THRESHOLD
@@ -30,6 +30,7 @@ from .injection_guard import scan
 from .notice import generate_notice
 from .identity import verify as identity_verify
 from .status_assurance import compute_status_assurance
+from .senior_support import analyze_message
 
 
 
@@ -201,9 +202,39 @@ def evidence_node(state: CaseState) -> dict[str, Any]:
 
 def fraud_node(state: CaseState) -> dict[str, Any]:
     score, signals, meta = compute_risk(state.issue_type, state.evidence, state.identity_verified)
+    senior = analyze_message(
+        state.customer_message,
+        senior_mode_enabled=state.senior_mode_enabled,
+        is_senior=state.is_senior,
+        caregiver_authorized=state.caregiver_authorized,
+    )
+    senior_flags = senior["flags"]
+    senior_summary = senior["summary"]
+    if senior_flags:
+        score = min(100, score + 70)
+        signals.append(RiskSignal(
+            code="SENIOR_SCAM_PRESSURE",
+            description="Senior-safe mode detected possible scam pressure or coercion.",
+            weight=70,
+            present=True,
+            evidence=", ".join(flag.replace("_", " ").lower() for flag in senior_flags),
+        ))
+        meta["band"] = "HIGH"
+        meta["typology"] = "Potential scam or coercion targeting senior"
+        meta["recommendation"] = (
+            "Pause resolution. Verify directly with the customer, use the authorized "
+            "caregiver only if consent is recorded, and do not act on urgent third-party instructions."
+        )
     fired = [s.code for s in signals if s.present]
 
     events = list(state.audit_events)
+    if senior_summary:
+        events.append(_ev(
+            state, node_name="senior_support",
+            decision="SENIOR_SAFE_CONTEXT_RECORDED",
+            evidence_used=senior_flags or ["senior_safe_mode"],
+            detail=senior_summary,
+        ))
     events.append(_ev(
         state, node_name="fraud_risk", risk_score=score,
         decision=f"risk_score={score} band={meta['band']} typology={meta['typology']}",
@@ -217,6 +248,8 @@ def fraud_node(state: CaseState) -> dict[str, Any]:
         "fraud_band": meta["band"],
         "fraud_typology": meta["typology"],
         "fraud_recommendation": meta["recommendation"],
+        "senior_protection_flags": senior_flags,
+        "senior_protection_summary": senior_summary,
         "current_step": "fraud_risk",
         "audit_events": events,
     }
@@ -288,11 +321,14 @@ def decision_node(state: CaseState) -> dict[str, Any]:
     # them. Cases with no money movement (explanations) resolve autonomously.
     moves_money = bool(d and d.refund_allowed)
     flagged = bool(d and d.requires_human_review)
-    needs_human = moves_money or flagged
+    senior_protection = bool(state.senior_protection_flags)
+    needs_human = moves_money or flagged or senior_protection
     status = "PENDING" if needs_human else "NOT_REQUIRED"
 
     if not needs_human:
         detail = "No money movement; agent resolves autonomously."
+    elif senior_protection:
+        detail = "Senior protection flags detected: human review required before closure."
     elif flagged and not moves_money:
         detail = "High risk: mandatory human review before any remedy."
     else:
@@ -327,7 +363,8 @@ def human_approval_node(state: CaseState) -> dict[str, Any]:
         "customer_id": state.customer_id,
         "risk_score": state.risk_score,
         "summary": f"{state.issue_type} dispute, risk {state.risk_score}, "
-                   f"rule {state.policy_decision.rule_id if state.policy_decision else '?'}",
+                   f"rule {state.policy_decision.rule_id if state.policy_decision else '?'}"
+                   + ("; senior protection review" if state.senior_protection_flags else ""),
     })
 
     if state.human_decision is None:
@@ -574,7 +611,14 @@ def run_case(case_id: str, customer_id: str, order_id: str | None,
              human_reviewer: str | None = None,
              simulate_failures: set[str] | None = None,
              provided_emirates_id: str | None = None,
-             otp_verified: bool = False) -> CaseState:
+             otp_verified: bool = False,
+             is_senior: bool = False,
+             senior_mode_enabled: bool = False,
+             preferred_language: str = "English",
+             caregiver_authorized: bool = False,
+             caregiver_name: str | None = None,
+             caregiver_relationship: str | None = None,
+             caregiver_phone: str | None = None) -> CaseState:
     """Run the graph end-to-end and return the final typed state.
 
     simulate_failures: tool names to force-fail (e.g. {"get_order"}) so the
@@ -596,6 +640,13 @@ def run_case(case_id: str, customer_id: str, order_id: str | None,
         human_reviewer=human_reviewer,
         provided_emirates_id=provided_emirates_id,
         otp_verified=otp_verified,
+        is_senior=is_senior,
+        senior_mode_enabled=senior_mode_enabled,
+        preferred_language=preferred_language,
+        caregiver_authorized=caregiver_authorized,
+        caregiver_name=caregiver_name,
+        caregiver_relationship=caregiver_relationship,
+        caregiver_phone=caregiver_phone,
     )
     app = build_graph()
     result = app.invoke(initial)

@@ -20,5 +20,16 @@
     "ordered_at": "2026-06-08T08:05:00Z",
     "payment_ids": ["PAY-B-7001", "PAY-B-7002"],
     "shipment_id": "SHP-B-200"
+  },
+  "ORD-C-300": {
+    "order_id": "ORD-C-300",
+    "customer_id": "CUST-3003",
+    "item": "Home Internet Router",
+    "amount": 1200.00,
+    "currency": "AED",
+    "status": "delivered",
+    "ordered_at": "2026-06-07T10:15:00Z",
+    "payment_ids": ["PAY-C-8001"],
+    "shipment_id": "SHP-C-300"
   }
 }

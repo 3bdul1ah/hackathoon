@@ -7,6 +7,8 @@ WHO TO LOG IN AS (see DEMO_LOGINS.txt for Emirates IDs):
   Omar Al-Farsi  (CUST-1001)  -> high-risk account (recent email change,
                                   prior goodwill, repeat refund attempts).
   Sara Haddad    (CUST-2002)  -> clean account.
+  Fatima Al-Mansoori (CUST-3003) -> senior-safe profile with authorized
+                                  daughter/caregiver.
 
 Each profile resolves to that customer's own order automatically, so the
 SAME wording produces different, realistic outcomes per profile.
@@ -65,14 +67,25 @@ As OMAR or SARA:
   - "I was overcharged compared to the listed price."
 
 ----------------------------------------------------------------------
-5) IDENTITY / LOGIN EDGE CASES (on the verify step)
+5) SENIOR-SAFE / CAREGIVER-ASSISTED PROTECTION
+----------------------------------------------------------------------
+As FATIMA, leave senior-safe support enabled and caregiver authorized:
+  - "Someone called me on WhatsApp and sent a payment link. They said my account will be blocked unless I pay right now."
+  - "A support agent told me to share my OTP and use a payment link before it expires."
+  - "Someone asked for remote access to my phone to fix my refund."
+Expected: senior protection flags appear, typology is "Potential scam or
+coercion targeting senior", the case is parked for human review, and the staff
+queue shows caregiver authorization. NO money movement.
+
+----------------------------------------------------------------------
+6) IDENTITY / LOGIN EDGE CASES (on the verify step)
 ----------------------------------------------------------------------
   - Enter a correct Emirates ID, wrong OTP        -> "Incorrect code".
   - Enter 784-0000-0000000-0 (unknown ID)         -> not recognised.
   - Enter "12345" (bad format)                    -> cannot verify.
 
 ----------------------------------------------------------------------
-6) TOOL-FAILURE RECOVERY (resilience)
+7) TOOL-FAILURE RECOVERY (resilience)
 ----------------------------------------------------------------------
   Tick "Simulate evidence-service outage" in the sidebar, then as OMAR:
   - "I never received my laptop."
@@ -80,7 +93,7 @@ As OMAR or SARA:
   via an alternate customer lookup and still completes.
 
 ----------------------------------------------------------------------
-7) END-TO-END HANDOFF (Customer page -> Staff console -> back)
+8) END-TO-END HANDOFF (Customer page -> Staff console -> back)
 ----------------------------------------------------------------------
   1. Customer (Omar): "I never received my laptop." -> under review.
   2. Sidebar: switch to Staff (risk reviewer), sign in.

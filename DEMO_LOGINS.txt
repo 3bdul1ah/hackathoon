@@ -38,6 +38,20 @@ PROFILE: Sara Haddad
                    Clear explanation, no refund owed. Resolved autonomously.
 
 ----------------------------------------------------------------------
+PROFILE: Fatima Al-Mansoori
+  Customer ID    : CUST-3003
+  Emirates ID    : 784-1951-3333333-3
+  Date of birth  : 1951-02-10
+  Phone (masked) : +971-56-xxx-3303
+  Email          : fatima.mansoori@example.com
+  Order          : ORD-C-300 — Home Internet Router — AED 1,200.00 (delivered)
+  Caregiver      : Mariam Al-Mansoori, daughter, +971-50-xxx-7788
+  Try saying     : "Someone called me on WhatsApp and sent a payment link.
+                   They said my account will be blocked unless I pay right now."
+  Expected       : Senior-safe mode records caregiver consent, detects possible
+                   scam pressure, and routes to a human reviewer. No money moves.
+
+----------------------------------------------------------------------
 EXTRA DEMO LEVERS (sidebar):
   - 'Simulate evidence-service outage' : forces get_order to fail so you
     can watch the agent retry and recover via an alternate lookup.

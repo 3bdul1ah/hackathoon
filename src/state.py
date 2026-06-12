@@ -153,6 +153,16 @@ class CaseState(BaseModel):
     prompt_injection_detected: bool = False
     prompt_injection_detail: Optional[str] = None
     final_outcome: Optional[str] = None
+    # --- senior-safe support / caregiver consent ---
+    is_senior: bool = False
+    senior_mode_enabled: bool = False
+    preferred_language: str = "English"
+    caregiver_authorized: bool = False
+    caregiver_name: Optional[str] = None
+    caregiver_relationship: Optional[str] = None
+    caregiver_phone: Optional[str] = None
+    senior_protection_flags: list[str] = Field(default_factory=list)
+    senior_protection_summary: Optional[str] = None
     # --- status assurance / follow-up ---
     sla_due_at: Optional[str] = None
     next_update_at: Optional[str] = None

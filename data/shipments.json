@@ -20,5 +20,16 @@
     "delivery_confirmed": true,
     "proof_of_delivery": "Left at reception, photo on file",
     "delivery_geo": "24.4539N, 54.3773E (registered address)"
+  },
+  "ORD-C-300": {
+    "shipment_id": "SHP-C-300",
+    "order_id": "ORD-C-300",
+    "carrier": "Emirates Post",
+    "tracking_number": "EP-30033003",
+    "status": "delivered",
+    "delivered_at": "2026-06-09T13:20:00Z",
+    "delivery_confirmed": true,
+    "proof_of_delivery": "Delivered to registered villa reception",
+    "delivery_geo": "24.4539N, 54.3773E (registered address)"
   }
 }

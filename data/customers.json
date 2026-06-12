@@ -30,5 +30,26 @@
     "refund_attempts_last_90d": 0,
     "identity_check_result": "passed",
     "identity_flag_reason": null
+  },
+  "CUST-3003": {
+    "customer_id": "CUST-3003",
+    "name": "Fatima Al-Mansoori",
+    "emirates_id": "784-1951-3333333-3",
+    "date_of_birth": "1951-02-10",
+    "registered_phone": "+971-56-xxx-3303",
+    "email": "fatima.mansoori@example.com",
+    "account_created_at": "2018-09-05T09:00:00Z",
+    "email_changed_at": null,
+    "phone_verified": true,
+    "previous_goodwill_credit": false,
+    "previous_goodwill_credit_at": null,
+    "refund_attempts_last_90d": 0,
+    "identity_check_result": "passed",
+    "identity_flag_reason": null,
+    "senior_eligible": true,
+    "caregiver_authorized": true,
+    "caregiver_name": "Mariam Al-Mansoori",
+    "caregiver_relationship": "daughter",
+    "caregiver_phone": "+971-50-xxx-7788"
   }
 }

@@ -70,6 +70,7 @@ FRIENDLY_STEPS = [
     ("triage", "Understanding your request"),
     ("identity_verification", "Confirming your identity"),
     ("evidence_retrieval", "Looking up your order and payments"),
+    ("senior_support", "Checking senior-safe support needs"),
     ("fraud_risk", "Running a quick security check"),
     ("policy", "Applying our refund policy"),
     ("legal_grounding", "Checking UAE Consumer Protection Law"),
@@ -122,6 +123,30 @@ def render_status_assurance(state, *, staff=False):
               "message": e.get("message")} for e in state.follow_up_events],
             use_container_width=True, hide_index=True,
         )
+
+
+def render_senior_support(state):
+    if not (state.senior_mode_enabled or state.is_senior):
+        return
+    rows = [
+        ("Senior-safe mode", "Enabled" if state.senior_mode_enabled else "Not requested"),
+        ("Senior customer", "Yes" if state.is_senior else "Not declared"),
+        ("Preferred language", state.preferred_language or "English"),
+        ("Caregiver updates", "Authorized" if state.caregiver_authorized else "Not authorized"),
+    ]
+    if state.caregiver_authorized:
+        rows.extend([
+            ("Caregiver", state.caregiver_name or "not provided"),
+            ("Relationship", state.caregiver_relationship or "not provided"),
+            ("Caregiver phone", state.caregiver_phone or "not provided"),
+        ])
+    if state.senior_protection_flags:
+        rows.append(("Protection flags", ", ".join(
+            flag.replace("_", " ").title() for flag in state.senior_protection_flags)))
+    body = "<br>".join(f"<b>{label}:</b> {value}" for label, value in rows)
+    if state.senior_protection_summary:
+        body += f"<br><br>{state.senior_protection_summary}"
+    card("amber" if state.senior_protection_flags else "blue", "Senior-safe support", body)
 
 
 # ----------------------------------------------------------- customer-facing UI
@@ -249,6 +274,8 @@ def behind_the_scenes(state, tool_log, payments_view=False):
         st.markdown(pill(f"RISK {state.risk_score}/100", rk)
                     + pill(f"HUMAN: {state.human_approval_status}",
                            "amber" if state.human_approval_status == "PENDING" else "grey")
+                    + (pill("SENIOR PROTECTION", "amber")
+                       if state.senior_protection_flags else "")
                     + (pill("PROMPT-INJECTION BLOCKED", "red") if state.prompt_injection_detected else ""),
                     unsafe_allow_html=True)
         if state.prompt_injection_detected:
@@ -271,6 +298,7 @@ def behind_the_scenes(state, tool_log, payments_view=False):
             render_signals(state)
         with c2:
             render_policy(state)
+        render_senior_support(state)
         render_legal(state, show_text=True)
         render_tool_calls(tool_log)
         if state.refund_package:
@@ -321,6 +349,7 @@ def render_fraud(state):
     with c2:
         card(color, f"Pattern detected: {state.fraud_typology}",
              f"<b>Recommended action:</b> {state.fraud_recommendation}")
+    render_senior_support(state)
     st.markdown("**Fraud signals and the evidence behind each one:**")
     st.dataframe([{"signal": s.code, "fired": "FIRED" if s.present else "no",
                    "weight": s.weight, "evidence": s.evidence or s.description}
@@ -412,19 +441,73 @@ def customer_page(outage):
     card("green", "Identity verified",
          f"Welcome back, <b>{cust.get('name', cid)}</b>. How can we help you today?")
     if st.button("Not you? Switch identity"):
-        for k in ("verified", "customer_id", "factors", "otp", "case", "help_state"):
+        for k in ("verified", "customer_id", "factors", "otp", "case", "help_state",
+                  "is_senior", "senior_mode_enabled", "preferred_language",
+                  "caregiver_authorized", "caregiver_name", "caregiver_relationship",
+                  "caregiver_phone"):
             st.session_state.pop(k, None)
         st.rerun()
 
+    default_senior = bool(cust.get("senior_eligible"))
+    card("blue", "Optional: senior-safe support",
+         "Use this if you are a senior citizen or helping an older family member. "
+         "It makes the case easier to follow and lets us protect against scam pressure.")
+    is_senior = st.checkbox(
+        "I am a senior citizen / helping a senior",
+        value=st.session_state.get("is_senior", default_senior),
+        key="is_senior",
+    )
+    senior_mode_enabled = st.checkbox(
+        "Use simpler explanations and extra account protection",
+        value=st.session_state.get("senior_mode_enabled", default_senior),
+        key="senior_mode_enabled",
+    )
+    preferred_language = st.selectbox(
+        "Preferred explanation language",
+        ["English", "Arabic"],
+        index=0 if st.session_state.get("preferred_language", "English") == "English" else 1,
+        key="preferred_language",
+    )
+    caregiver_authorized = st.checkbox(
+        "Authorize a trusted caregiver or family member to receive case updates",
+        value=st.session_state.get("caregiver_authorized", bool(cust.get("caregiver_authorized"))),
+        key="caregiver_authorized",
+    )
+    caregiver_name = caregiver_relationship = caregiver_phone = None
+    if caregiver_authorized:
+        c1, c2 = st.columns(2)
+        caregiver_name = c1.text_input(
+            "Caregiver name",
+            value=st.session_state.get("caregiver_name", cust.get("caregiver_name", "")),
+            key="caregiver_name",
+        )
+        caregiver_relationship = c2.text_input(
+            "Relationship",
+            value=st.session_state.get("caregiver_relationship", cust.get("caregiver_relationship", "")),
+            key="caregiver_relationship",
+        )
+        caregiver_phone = st.text_input(
+            "Caregiver phone",
+            value=st.session_state.get("caregiver_phone", cust.get("caregiver_phone", "")),
+            key="caregiver_phone",
+        )
+
     st.markdown("**Tell us what happened, in your own words:**")
     msg = st.text_area("Your message", key="msg_main", label_visibility="collapsed",
-                       placeholder="Type your issue here.")
+                       placeholder=("Example: Someone called me and sent a payment link, "
+                                    "saying my account will be blocked unless I pay now."
+                                    if senior_mode_enabled else "Type your issue here."))
 
     f = st.session_state.factors
     run_kwargs = dict(
         case_id=st.session_state.get("case") or ("CASE-" + uuid.uuid4().hex[:6].upper()),
         customer_id=cid, order_id=order_for_customer(cid), customer_message=msg,
         provided_emirates_id=f["emirates_id"], otp_verified=f["otp_verified"],
+        is_senior=is_senior, senior_mode_enabled=senior_mode_enabled,
+        preferred_language=preferred_language,
+        caregiver_authorized=caregiver_authorized,
+        caregiver_name=caregiver_name, caregiver_relationship=caregiver_relationship,
+        caregiver_phone=caregiver_phone,
         simulate_failures={"get_order"} if outage else None)
     st.session_state.case = run_kwargs["case_id"]
 
@@ -443,6 +526,7 @@ def customer_page(outage):
         show_reply = s.human_approval_status != "PENDING"
         render_chat(s.customer_message, s.customer_notice if show_reply else None)
         st.write("")
+        render_senior_support(s)
         customer_card(s)
         if s.human_approval_status == "PENDING":
             st.caption("Your request is with our review team. This page updates when they decide.")
@@ -494,6 +578,9 @@ def staff_page():
         st.markdown("**Queue** (newest first; PENDING_REVIEW needs your decision):")
         st.dataframe([{"case": c["case_id"], "customer": c["customer_name"], "issue": c["issue"],
                        "risk": c["state"].risk_score, "band": c["state"].fraud_band,
+                       "senior support": "yes" if c["state"].senior_mode_enabled else "",
+                       "caregiver": "authorized" if c["state"].caregiver_authorized else "",
+                       "priority": "protective review" if c["state"].senior_protection_flags else "",
                        "status": c["status"], "SLA": (c.get("sla_status") or "").replace("_", " "),
                        "next update": fmt_when(c.get("next_update_at"))} for c in cases],
                      use_container_width=True, hide_index=True)
@@ -522,10 +609,16 @@ def staff_page():
 
         if s.human_approval_status == "PENDING":
             st.markdown("#### Your decision")
-            st.caption("Approving will run the gated, idempotent execute_refund. Rejecting closes "
-                       "the case with no money movement. The agent recommendation is above.")
+            will_issue_refund = bool(s.policy_decision and s.policy_decision.action != "EXPLAIN_NO_REFUND")
+            if will_issue_refund:
+                st.caption("Approving will run the gated, idempotent execute_refund. Rejecting closes "
+                           "the case with no money movement. The agent recommendation is above.")
+            else:
+                st.caption("Mark verified closes the protective review with an explanation. Rejecting "
+                           "keeps the case closed with no money movement. The agent recommendation is above.")
             a1, a2 = st.columns(2)
-            if a1.button("Approve and issue refund", type="primary", use_container_width=True):
+            approve_label = "Approve and issue refund" if will_issue_refund else "Mark verified / close safely"
+            if a1.button(approve_label, type="primary", use_container_width=True):
                 ns = run_case(**rec["run_kwargs"], human_decision="APPROVE",
                               human_reviewer=st.session_state.get("reviewer", "reviewer"))
                 case_store.upsert(ns.case_id, state=ns, run_kwargs=rec["run_kwargs"],

@@ -64,16 +64,29 @@ def compute_status_assurance(state, *, now: datetime | None = None) -> dict[str,
     if state.human_approval_status == "PENDING":
         next_update = now + timedelta(minutes=30)
         sla_due = now + timedelta(hours=4)
-        owner = "Risk review specialist"
-        message = (
-            "A specialist owns this review. You will receive an update within "
-            "30 minutes, even if the final decision needs more time."
-        )
+        owner = "Senior protection specialist" if state.senior_protection_flags else "Risk review specialist"
+        if state.senior_protection_flags:
+            message = (
+                "A specialist owns this protective review. We will not follow urgent "
+                "third-party payment instructions, and you will receive an update within "
+                "30 minutes."
+            )
+        else:
+            message = (
+                "A specialist owns this review. You will receive an update within "
+                "30 minutes, even if the final decision needs more time."
+            )
         appeal = False
         events = [
             _base_event("next_update", "Send customer a review status update.", _iso(next_update)),
             _base_event("sla_due", "Escalate if the review is not decided.", _iso(sla_due)),
         ]
+        if state.caregiver_authorized:
+            events.append(_base_event(
+                "caregiver_update",
+                f"Share status with authorized caregiver {state.caregiver_name or ''}.".strip(),
+                _iso(next_update),
+            ))
     elif state.refund_executed:
         next_update = now + timedelta(hours=24)
         sla_due = now + timedelta(days=3)
@@ -128,6 +141,14 @@ def compute_status_assurance(state, *, now: datetime | None = None) -> dict[str,
         events = [
             _base_event("reopen_available", "Customer may reopen with new evidence.", _iso(next_update)),
         ]
+
+    if state.senior_mode_enabled and state.caregiver_authorized:
+        message += (
+            f" Updates may also be shared with the authorized caregiver"
+            f"{' ' + state.caregiver_name if state.caregiver_name else ''}."
+        )
+    elif state.senior_mode_enabled:
+        message += " Senior-safe explanations are enabled for this case."
 
     return {
         "sla_due_at": _iso(sla_due),

@@ -30,6 +30,7 @@ def banner(title: str) -> None:
 # Identity factors the customer supplied at the pre-dispute verification gate.
 EID_A = dict(provided_emirates_id="784-1989-1234567-1", otp_verified=True)
 EID_B = dict(provided_emirates_id="784-1992-7654321-2", otp_verified=True)
+EID_C = dict(provided_emirates_id="784-1951-3333333-3", otp_verified=True)
 
 
 def main() -> None:
@@ -81,6 +82,27 @@ def main() -> None:
     print(f"refund_prepared={b.refund_package is not None}  <-- correctly False (not a duplicate)")
     print(f"notice: {b.customer_notice}")
     dump(b, list(TOOL_CALL_LOG), OUT / "scenario_b.json")
+
+    # ---- Scenario C: senior-safe / caregiver-assisted protection ----
+    banner("SCENARIO C: senior-safe scam-pressure protection")
+    c = run_case(
+        "CASE-C-0001", "CUST-3003", "ORD-C-300",
+        "Someone called me on WhatsApp and sent a payment link. "
+        "They said my account will be blocked unless I pay right now.",
+        is_senior=True,
+        senior_mode_enabled=True,
+        preferred_language="English",
+        caregiver_authorized=True,
+        caregiver_name="Mariam Al-Mansoori",
+        caregiver_relationship="daughter",
+        caregiver_phone="+971-50-xxx-7788",
+        **EID_C,
+    )
+    print(f"issue={c.issue_type} risk={c.risk_score} band={c.fraud_band} "
+          f"typology={c.fraud_typology}")
+    print(f"senior_flags={c.senior_protection_flags} human={c.human_approval_status}")
+    print(f"caregiver_authorized={c.caregiver_authorized} refund_prepared={c.refund_package is not None}")
+    dump(c, list(TOOL_CALL_LOG), OUT / "scenario_c_senior_safe.json")
 
     print("\nDone. See outputs/ for full JSON.")
 
