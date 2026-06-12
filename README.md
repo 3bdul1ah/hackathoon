@@ -2,12 +2,13 @@
 
 Tamkeen 5.0, Advanced Track. A **LangGraph agent** (not a chatbot) that resolves
 payment disputes with planning, stateful execution, least-privilege tools,
-versioned policy grounding, deterministic fraud scoring, a real human-in-the-loop
-gate, and a complete audit trail.
+versioned policy grounding, deterministic fraud scoring, status assurance for
+waiting customers, a real human-in-the-loop gate, and a complete audit trail.
 
-> **Safety invariant:** no refund is ever executed automatically. The only
-> money-adjacent tool is `prepare_refund`, which assembles a package behind the
-> human-approval gate. There is deliberately **no `execute_refund` tool anywhere**.
+> **Safety invariant:** no refund is ever executed automatically. Money movement
+> is split into `prepare_refund` and `execute_refund`: preparation assembles the
+> package, and execution is mocked, idempotent, and gated by a human-approval
+> token.
 
 ## Quickstart
 
@@ -17,7 +18,7 @@ pip install -r requirements.txt
 # Generate sample outputs for both scenarios (writes to outputs/)
 python run_scenarios.py
 
-# Launch the demo UI (4 tabs: Scenario A, Scenario B, Audit Trail, Architecture)
+# Launch the demo UI (Customer and Staff surfaces)
 streamlit run app.py
 ```
 
@@ -28,6 +29,11 @@ fallback: if the key is missing or invalid, replies show a clear error. The
 fraud and policy engines and passed to the model as grounding, so wording can
 never change a decision, amount, or policy.
 
+The app also computes deterministic **status assurance**: who owns the case, when
+the customer will hear back, the SLA due time, any appeal path, and a follow-up
+action log. This is the non-technical value layer for UAE residents who cannot
+afford to wait weeks without clarity on refunds or high-cost disputes.
+
 > Put a real OpenAI key (`OPENAI_API_KEY=sk-...`) in `.env`. A GitHub token
 > (`ghp_...`) or any non-`sk-` value will fail with a 401.
 
@@ -35,7 +41,7 @@ never change a decision, amount, or policy.
 
 **A. Suspicious refund** (`CUST-1001` / `ORD-A-100`): "I never received my AED 3500
 laptop." Delivery is confirmed, the account email changed 3 days ago, a goodwill
-credit was already issued, and there were prior refund attempts → **risk 95** →
+credit was already issued, and there were prior refund attempts → **risk 100** →
 policy rule **R-001** → autonomous execution **PAUSES** → routed to a human. Approve
 to prepare the refund package; reject to close with no refund. **No auto-refund.**
 
@@ -49,7 +55,7 @@ would prepare a refund.)
 
 ```
 hackathon/
-├── app.py                  # Streamlit UI (4 tabs)
+├── app.py                  # Streamlit UI (Customer page + Staff console)
 ├── run_scenarios.py        # CLI: runs both scenarios, writes outputs/
 ├── requirements.txt
 ├── policy/

@@ -203,7 +203,7 @@
     "human_approval_status": "NOT_REQUIRED",
     "audit_events": [
       {
-        "timestamp": "2026-06-12T07:35:41.209165+00:00",
+        "timestamp": "2026-06-12T08:19:30.161899+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -216,7 +216,7 @@
         "detail": "Routed dispute as 'duplicate_charge'."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.209589+00:00",
+        "timestamp": "2026-06-12T08:19:30.162485+00:00",
         "node_name": "identity_verification",
         "tool_called": "verify_emirates_id",
         "evidence_used": [
@@ -231,7 +231,7 @@
         "detail": "Identity verified via Emirates ID + OTP. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.210045+00:00",
+        "timestamp": "2026-06-12T08:19:30.163528+00:00",
         "node_name": "evidence_retrieval",
         "tool_called": "get_order,get_payment,get_shipment",
         "evidence_used": [
@@ -250,7 +250,7 @@
         "detail": "Collected 2 payment record(s)."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.210408+00:00",
+        "timestamp": "2026-06-12T08:19:30.163955+00:00",
         "node_name": "fraud_risk",
         "tool_called": null,
         "evidence_used": [],
@@ -263,7 +263,7 @@
         "detail": "Signals fired: none. Recommendation: Safe to resolve per policy; no elevated review needed."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.210766+00:00",
+        "timestamp": "2026-06-12T08:19:30.164473+00:00",
         "node_name": "policy",
         "tool_called": null,
         "evidence_used": [],
@@ -276,7 +276,7 @@
         "detail": "R-004: One charge is a temporary authorization hold that will be released automatically; only one real charge exists, so no refund is owed."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.211242+00:00",
+        "timestamp": "2026-06-12T08:19:30.165088+00:00",
         "node_name": "legal_grounding",
         "tool_called": "search_law",
         "evidence_used": [
@@ -295,7 +295,7 @@
         "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 8, Article 4, Article 19, Article 1-Invoice, Article 12."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.211561+00:00",
+        "timestamp": "2026-06-12T08:19:30.165404+00:00",
         "node_name": "decision",
         "tool_called": null,
         "evidence_used": [],
@@ -308,7 +308,7 @@
         "detail": "No money movement; agent resolves autonomously."
       },
       {
-        "timestamp": "2026-06-12T07:35:43.755863+00:00",
+        "timestamp": "2026-06-12T08:19:30.165917+00:00",
         "node_name": "prepare_remedy",
         "tool_called": null,
         "evidence_used": [],
@@ -317,11 +317,26 @@
         "policy_version": "v1.0.0",
         "rule_id": "R-004",
         "human_approval_status": "NOT_REQUIRED",
-        "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+        "customer_notice": "[Reply unavailable: OPENAI_API_KEY is not set in .env. Add a valid OpenAI key (sk-...) to .env.]",
         "detail": "No refund owed; explanation issued to customer."
       },
       {
-        "timestamp": "2026-06-12T07:35:43.757018+00:00",
+        "timestamp": "2026-06-12T08:19:30.166743+00:00",
+        "node_name": "status_assurance",
+        "tool_called": null,
+        "evidence_used": [
+          "auth_hold_release_check"
+        ],
+        "risk_score": 0,
+        "decision": "sla_status=closed",
+        "policy_version": "v1.0.0",
+        "rule_id": null,
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": "There is one settled charge and one temporary authorization hold. The hold is expected to release automatically by the date shown, and you can reopen the case if it still appears after that.",
+        "detail": "Owner: Payments support automation. Next update: 2026-06-15T08:05:30+00:00. SLA due: 2026-06-15T08:05:30+00:00."
+      },
+      {
+        "timestamp": "2026-06-12T08:19:30.166751+00:00",
         "node_name": "audit_logger",
         "tool_called": null,
         "evidence_used": [],
@@ -330,11 +345,11 @@
         "policy_version": "v1.0.0",
         "rule_id": null,
         "human_approval_status": "NOT_REQUIRED",
-        "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+        "customer_notice": "[Reply unavailable: OPENAI_API_KEY is not set in .env. Add a valid OpenAI key (sk-...) to .env.]",
         "detail": "No refund owed; explanation issued to customer."
       }
     ],
-    "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+    "customer_notice": "[Reply unavailable: OPENAI_API_KEY is not set in .env. Add a valid OpenAI key (sk-...) to .env.]",
     "current_step": "audit_logger",
     "identity_detail": "Identity verified via Emirates ID + OTP.",
     "policy_decision": {
@@ -353,6 +368,19 @@
     "prompt_injection_detected": false,
     "prompt_injection_detail": null,
     "final_outcome": "No refund owed; explanation issued to customer.",
+    "sla_due_at": "2026-06-15T08:05:30+00:00",
+    "next_update_at": "2026-06-15T08:05:30+00:00",
+    "assigned_owner": "Payments support automation",
+    "customer_waiting_message": "There is one settled charge and one temporary authorization hold. The hold is expected to release automatically by the date shown, and you can reopen the case if it still appears after that.",
+    "appeal_available": true,
+    "follow_up_events": [
+      {
+        "type": "auth_hold_release_check",
+        "scheduled_at": "2026-06-15T08:05:30+00:00",
+        "message": "Check whether the bank authorization hold has released."
+      }
+    ],
+    "sla_status": "closed",
     "evidence_incomplete": false,
     "tool_failures": [],
     "recovery_notes": [],

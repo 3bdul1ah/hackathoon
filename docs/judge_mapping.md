@@ -31,9 +31,12 @@ Every scoring line maps to concrete, runnable code. Total: 100 + 5 bonus.
   evidence and recommendation, then the human Approves or Rejects. **The agent
   supports the human, it does not replace them.** **Every refund** requires a human
   sign-off before money moves.
+- **Status assurance** shows the customer who owns the case, the next update
+  time, the SLA due time, and the appeal path, so a pending refund review does
+  not feel like a black box.
 - **`human_approval` node**: opens `create_risk_case`, sets `PENDING`, prepares
   **no** refund, ends the run. The Approve/Reject gate resumes it.
-- **No refund is ever auto-executed**; Scenario A proves the pause (`risk 95 →
+- **No refund is ever auto-executed**; Scenario A proves the pause (`risk 100 →
   PAUSED`, `refund_package is None`).
 - **Emirates ID verification runs before the dispute** (`src/identity.py`): format
   check, identity match, and OTP; a failed check raises risk.
@@ -57,7 +60,10 @@ Every scoring line maps to concrete, runnable code. Total: 100 + 5 bonus.
 - **`AuditEvent`** (`src/state.py`) written by **every** node with the full required
   structure: timestamp, node_name, tool_called, evidence_used, risk_score, decision,
   policy_version, rule_id, human_approval_status, customer_notice, detail.
-- `audit_logger` node seals the case; **UI Tab ③** renders the timeline + raw JSON.
+- **`status_assurance` audit event** records the follow-up promise, owner, next
+  update, SLA due time, and scheduled follow-up actions.
+- `audit_logger` node seals the case; the **Staff Console Audit trail** renders
+  the timeline + raw JSON.
 - Deterministic engines ⇒ the audit trail is reproducible run-to-run.
 
 ## 5. Policy Grounding + Remedy Correctness: 10 pts
@@ -94,13 +100,15 @@ Every scoring line maps to concrete, runnable code. Total: 100 + 5 bonus.
   `PROMPT_INJECTION_ATTEMPT`, and **ignored**; the workflow proceeds unchanged.
 - **Emirates ID / OTP verification** (`src/identity.py`) before
   any dispute is processed, plus a **live tool-failure recovery** demo toggle.
+- **Customer anxiety reduction** (`src/status_assurance.py`): every pending or
+  resolved case gets a clear owner, next update, SLA, and appeal path.
 
 ---
 
 ### Required-scenario evidence (from `python run_scenarios.py`)
 | Scenario | issue | risk | rule | outcome | refund auto-executed? |
 |---|---|---|---|---|---|
-| A (initial) | item_not_received | 95 | R-001 | PAUSED → human | **No** |
-| A (approved) | item_not_received | 95 | R-001 | human approves → prepared → **executed** | No (only after human sign-off) |
-| A (outage) | item_not_received | 95 | R-001 | get_order fails → **recovered** via fallback | No |
+| A (initial) | item_not_received | 100 | R-001 | PAUSED → human | **No** |
+| A (approved) | item_not_received | 100 | R-001 | human approves → prepared → **executed** | No (only after human sign-off) |
+| A (outage) | item_not_received | 100 | R-001 | get_order fails → **recovered** via fallback | No |
 | B | duplicate_charge | 0 | R-004 | explain hold, no refund | No |

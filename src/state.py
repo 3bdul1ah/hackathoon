@@ -153,6 +153,14 @@ class CaseState(BaseModel):
     prompt_injection_detected: bool = False
     prompt_injection_detail: Optional[str] = None
     final_outcome: Optional[str] = None
+    # --- status assurance / follow-up ---
+    sla_due_at: Optional[str] = None
+    next_update_at: Optional[str] = None
+    assigned_owner: Optional[str] = None
+    customer_waiting_message: Optional[str] = None
+    appeal_available: bool = False
+    follow_up_events: list[dict[str, Any]] = Field(default_factory=list)
+    sla_status: Optional[str] = None          # on_track / due_soon / overdue / closed
     # --- resilience / recovery ---
     evidence_incomplete: bool = False        # primary lookups returned nothing
     tool_failures: list[str] = Field(default_factory=list)

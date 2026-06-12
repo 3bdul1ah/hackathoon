@@ -3,8 +3,8 @@
 Design rules enforced here:
   * READ tools (get_order / get_payment / get_shipment) can ONLY read mock data.
   * RISK tool (create_risk_case) opens a review case; it cannot move money.
-  * ACTION tool (prepare_refund) ONLY assembles a refund package. There is
-    deliberately NO execute_refund tool anywhere in the system.
+  * ACTION tools are split: prepare_refund assembles a refund package, while
+    execute_refund is separate, approval-token gated, and idempotent.
   * TOOL_PERMISSIONS pins exactly which node may call which tool, so least
     privilege is verifiable, not just asserted.
 """

@@ -6,13 +6,13 @@ Customer Request
   -> evidence_retrieval
   -> fraud_risk
   -> policy
-  -> decision  --(LOW / refund allowed)--> prepare_remedy -> audit_logger -> END
-               --(HIGH / human review)---> human_approval --+--> prepare_remedy -> audit_logger -> END
+  -> decision  --(LOW / refund allowed)--> prepare_remedy -> execute_refund -> audit_logger -> END
+               --(HIGH / human review)---> human_approval --+--> prepare_remedy -> execute_refund -> audit_logger -> END
                                                              +--> audit_logger -> END   (pending / rejected)
 
-Every node appends exactly one AuditEvent. No refund is ever executed; the only
-money-adjacent tool is prepare_refund, which assembles a package behind the
-human-approval gate.
+Every node appends an AuditEvent. No refund is executed automatically: the
+money-adjacent tools are split into prepare_refund and an approval-token gated
+execute_refund stage behind the human-approval gate.
 """
 from __future__ import annotations
 
@@ -29,6 +29,7 @@ from .policy_engine import evaluate
 from .injection_guard import scan
 from .notice import generate_notice
 from .identity import verify as identity_verify
+from .status_assurance import compute_status_assurance
 
 
 
@@ -486,6 +487,22 @@ def audit_logger_node(state: CaseState) -> dict[str, Any]:
         notice = generate_notice("ROUTE_TO_HUMAN_REVIEW")
         outcome = "Reviewer rejected the refund. NO refund executed."
 
+    assured_state = state.model_copy(update={
+        "customer_notice": notice or state.customer_notice,
+        "final_outcome": outcome or state.final_outcome,
+    })
+    assurance = compute_status_assurance(assured_state)
+    events.append(_ev(
+        assured_state, node_name="status_assurance",
+        evidence_used=[e["type"] for e in assurance["follow_up_events"]],
+        decision=f"sla_status={assurance['sla_status']}",
+        customer_notice=assurance["customer_waiting_message"],
+        detail=(
+            f"Owner: {assurance['assigned_owner']}. Next update: "
+            f"{assurance['next_update_at']}. SLA due: {assurance['sla_due_at']}."
+        ),
+    ))
+
     events.append(_ev(
         state, node_name="audit_logger",
         decision="CASE_SEALED",
@@ -495,6 +512,7 @@ def audit_logger_node(state: CaseState) -> dict[str, Any]:
     return {
         "customer_notice": notice or state.customer_notice,
         "final_outcome": outcome or state.final_outcome,
+        **assurance,
         "current_step": "audit_logger",
         "audit_events": events,
     }

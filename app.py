@@ -14,6 +14,7 @@ import json
 import os
 import random
 import uuid
+from datetime import datetime, timedelta, timezone
 
 try:
     from dotenv import load_dotenv
@@ -89,6 +90,40 @@ def card(kind, headline, body):
                 f'<div>{body}</div></div>', unsafe_allow_html=True)
 
 
+def fmt_when(value):
+    if not value:
+        return "not scheduled"
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        gst = dt.astimezone(timezone(timedelta(hours=4)))
+        return gst.strftime("%d %b %Y, %H:%M GST")
+    except ValueError:
+        return value
+
+
+def render_status_assurance(state, *, staff=False):
+    if not state.customer_waiting_message:
+        return
+    rows = [
+        ("Owner", state.assigned_owner or "Customer care"),
+        ("Next update by", fmt_when(state.next_update_at)),
+        ("SLA due", fmt_when(state.sla_due_at)),
+        ("Status", (state.sla_status or "on_track").replace("_", " ")),
+        ("Appeal path", "Available" if state.appeal_available else "Not needed right now"),
+    ]
+    body = state.customer_waiting_message + "<br><br>" + "<br>".join(
+        f"<b>{label}:</b> {value}" for label, value in rows
+    )
+    card("blue" if not staff else "grey", "Status assurance", body)
+    if staff and state.follow_up_events:
+        st.markdown("**Follow-up action log:**")
+        st.dataframe(
+            [{"type": e.get("type"), "scheduled": fmt_when(e.get("scheduled_at")),
+              "message": e.get("message")} for e in state.follow_up_events],
+            use_container_width=True, hide_index=True,
+        )
+
+
 # ----------------------------------------------------------- customer-facing UI
 def render_chat(message, notice):
     st.markdown(f'<div class="muted">You</div><span class="you">{message}</span>',
@@ -143,6 +178,7 @@ def customer_card(state):
     else:
         card("blue", "Here is what we found",
              "Good news. There is nothing to refund. See the explanation above.")
+    render_status_assurance(state)
 
 
 # --------------------------------------------------------- reviewer / internals
@@ -325,6 +361,7 @@ def customer_page(outage):
     st.markdown('<p class="sub">Confirm it is really you, tell us what went wrong, and our '
                 'assistant will look into it. A person signs off before any money moves.</p>',
                 unsafe_allow_html=True)
+    st.caption("Built for UAE residents who need clear refund timelines, especially for high-cost flights, electronics, telecom, utilities, and marketplace purchases.")
 
     # ---- Step 1: identity verification (resolves which customer this is) ----
     if not st.session_state.get("verified"):
@@ -445,10 +482,11 @@ def staff_page():
     with t_queue:
         cases = case_store.all_cases()
         pend = case_store.pending()
-        m1, m2, m3 = st.columns(3)
+        m1, m2, m3, m4 = st.columns(4)
         m1.metric("Open cases", len(cases))
         m2.metric("Awaiting review", len(pend))
         m3.metric("High-risk", sum(1 for c in cases if (c["state"].fraud_band == "HIGH")))
+        m4.metric("SLA risk", sum(1 for c in cases if c.get("sla_status") in {"due_soon", "overdue"}))
         if not cases:
             st.info("No cases yet. Submit one from the Customer page (use the role switch in the sidebar).")
             return
@@ -456,7 +494,8 @@ def staff_page():
         st.markdown("**Queue** (newest first; PENDING_REVIEW needs your decision):")
         st.dataframe([{"case": c["case_id"], "customer": c["customer_name"], "issue": c["issue"],
                        "risk": c["state"].risk_score, "band": c["state"].fraud_band,
-                       "status": c["status"]} for c in cases],
+                       "status": c["status"], "SLA": (c.get("sla_status") or "").replace("_", " "),
+                       "next update": fmt_when(c.get("next_update_at"))} for c in cases],
                      use_container_width=True, hide_index=True)
 
         ids = [c["case_id"] for c in cases]
@@ -479,6 +518,7 @@ def staff_page():
                               for p in s.evidence.payments], hide_index=True, use_container_width=True)
             render_policy(s)
             render_legal(s, show_text=True)
+            render_status_assurance(s, staff=True)
 
         if s.human_approval_status == "PENDING":
             st.markdown("#### Your decision")
@@ -524,7 +564,8 @@ def staff_page():
         st.markdown("""
 **Two surfaces, one agent.** Customers get a clean help box; staff get a risk console
 where the agent presents a named fraud typology, the evidence, and a recommendation,
-and a human signs off before money moves.
+and a human signs off before money moves. The status-assurance layer gives the
+customer an owner, next update time, SLA due time, and appeal path.
 
 | Rubric item | Where it lives |
 |---|---|
@@ -534,7 +575,7 @@ and a human signs off before money moves.
 | Auditability (15) | `AuditEvent` written by every node; Audit trail + raw JSON |
 | Policy Grounding + Remedy (10) | `policy/policy_v1.json` + **RAG over UAE Law No.15/2020** (`src/rag.py`); decisions cite version, rule, and law articles |
 | Demo Clarity (10) | separate Customer and Staff pages, real-vs-mocked panel |
-| Innovation (5) | RAG legal agent + fraud typologies + prompt-injection defense + Emirates ID / OTP |
+| Innovation (5) | RAG legal agent + fraud typologies + prompt-injection defense + Emirates ID / OTP + status assurance |
 """)
 
 

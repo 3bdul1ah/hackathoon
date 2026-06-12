@@ -2,10 +2,11 @@
 
 ## 1. Principle: an agent, not a chatbot
 
-The system is a **LangGraph state machine** with eight specialised nodes. It
+The system is a **LangGraph state machine** with specialised nodes. It
 plans (deterministic routing), holds typed state across steps, calls tools under
 least privilege, grounds every decision in versioned policy, scores risk, pauses
-for a human, and seals an audit trail. No free-form chat loop decides outcomes.
+for a human, computes status-assurance promises, and seals an audit trail. No
+free-form chat loop decides outcomes.
 
 ## 2. The graph (`src/graph.py`)
 
@@ -95,15 +96,18 @@ auto-executed**: a human signs off first.
 
 ## 5. Fraud engine (`src/fraud_engine.py`)
 
-Five deterministic, additive signals (capped at 100):
+Eight deterministic, additive signals (capped at 100):
 
 | Signal | Weight |
 |---|---|
-| DELIVERY_CONFIRMED | 30 |
+| DELIVERY_CONFIRMED | 25 |
 | RECENT_ACCOUNT_CHANGE | 25 |
 | PREVIOUS_REFUND_ISSUED | 20 |
 | MULTIPLE_REFUND_ATTEMPTS | 20 |
 | IDENTITY_VERIFICATION_FAILURE | 25 |
+| HIGH_VALUE_ORDER | 10 |
+| DELIVERY_ADDRESS_MISMATCH | 15 |
+| PHONE_NOT_VERIFIED | 10 |
 
 `score ≥ 70 → human review`. Same evidence ⇒ same score, every time.
 
@@ -136,14 +140,26 @@ Examples: a duplicate-charge dispute cites **Art. 8** (detailed invoice) and
 **Art. 10 / 12 / 15** (replace or return the value); any contested case cites
 **Art. 23** (experts for disputes) and **Art. 24** (compensation, misuse excluded).
 
-## 7. Audit trail (`AuditEvent`)
+## 7. Status assurance (`src/status_assurance.py`)
 
-Every node appends one immutable event: `timestamp, node_name, tool_called,
+At the audit boundary, the app computes a deterministic customer waiting promise:
+assigned owner, next update time, SLA due time, appeal availability, and follow-up
+events. The Customer page shows these values in the existing card style, while
+the Staff Console queue shows SLA risk (`on track`, `due soon`, `overdue`, or
+`closed`). This helps residents who cannot wait weeks without clarity on refunds,
+especially for high-cost flights, electronics, telecom, utilities, and marketplace
+purchases.
+
+## 8. Audit trail (`AuditEvent`)
+
+Every node appends one immutable event, and the status-assurance helper appends
+one follow-up event: `timestamp, node_name, tool_called,
 evidence_used, risk_score, decision, policy_version, rule_id,
 human_approval_status, customer_notice, detail`. The `audit_logger` node seals
-the case. The full timeline is visible in UI Tab 3 and as raw JSON.
+the case. The full timeline is visible in the Staff Console audit tab and as raw
+JSON.
 
-## 8. Prompt-injection defense (`src/injection_guard.py`)
+## 9. Prompt-injection defense (`src/injection_guard.py`)
 
 The customer message is untrusted. `triage` scans it for override/escalation
 phrases; on a hit it logs `PROMPT_INJECTION_ATTEMPT` and **continues the normal
