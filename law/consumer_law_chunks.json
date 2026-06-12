@@ -1,0 +1,97 @@
+{
+  "source": "UAE Federal Law No. (15) of 2020 on Consumer Protection",
+  "issued": "2020-11-10",
+  "note": "Article-level chunks used by the RAG retriever. Text is quoted/condensed from the official law for grounding and citation.",
+  "chunks": [
+    {
+      "article_id": "Art.1-Defect",
+      "title": "Article 1: Definition: Defect",
+      "text": "Defect: A lack in the quality, quantity or efficiency, or a difference in the outer appearance, size or components of the commodity or service resulting from an error in its design, manufacturing, production or its being supplied to the consumer, leading to their harm or preventing them totally or partially from using it; provided the defect does not result from an action of the consumer.",
+      "tags": ["defect", "quality", "not received", "damaged", "consumer fault"]
+    },
+    {
+      "article_id": "Art.1-Invoice",
+      "title": "Article 1: Definition: Invoice",
+      "text": "Invoice: Any instrument sufficient by itself to prove the transaction or contracting with the consumer on a commodity or service, provided it contains the data required by this Law or its Executive Regulation.",
+      "tags": ["invoice", "proof", "transaction", "charge", "payment", "billing"]
+    },
+    {
+      "article_id": "Art.1-Recovery",
+      "title": "Article 1: Definition: Recovery",
+      "text": "Recovery: Withdrawing the defected or dangerous commodity through the provider, or via the concerned authority or relevant authority in the State, or the country of origin or any other state.",
+      "tags": ["recovery", "recall", "defect", "dangerous"]
+    },
+    {
+      "article_id": "Art.4",
+      "title": "Article 4: Consumer Rights",
+      "text": "All prescribed obligations are consumer rights, including: obtaining true information on the commodities or service; protecting consumers' privacy and data security and not using these for promotion; fair and quick settlement for consumers' disputes; and obtaining fair compensation for damages caused to them or their property as a result of purchasing or using the commodity or receiving the service.",
+      "tags": ["rights", "true information", "privacy", "data security", "fair settlement", "dispute", "compensation"]
+    },
+    {
+      "article_id": "Art.8",
+      "title": "Article 8: Price of the Commodity and Service; Invoice",
+      "text": "The provider shall clearly write the price; advertising of prices must not be misleading; and the provider shall provide the consumer with a detailed invoice containing its trade name, address, commodity or service type, price and quantity and any other data prescribed by the Executive Regulation.",
+      "tags": ["price", "invoice", "billing", "charge", "duplicate", "overcharge", "misleading"]
+    },
+    {
+      "article_id": "Art.10",
+      "title": "Article 10: Obligations of the Provider in Honouring the Warranty",
+      "text": "The provider shall honour all warranties, provide spare parts and maintenance, replace the commodity or return its cash value, and be committed to after-sales service during the period specified. The provider shall guarantee the service is free from defects and flaws; otherwise it shall return the amount paid by the consumer or part thereof, or correctly re-provide the service.",
+      "tags": ["warranty", "replace", "return cash value", "refund", "reimburse", "after-sales"]
+    },
+    {
+      "article_id": "Art.12",
+      "title": "Article 12: Flaw in the Commodity or Service",
+      "text": "In case of discovering a flaw in the commodity or service, the provider shall repair, replace or recover the commodity and reimburse its price, or re-provide the service without charge, as prescribed by the Executive Regulation.",
+      "tags": ["flaw", "repair", "replace", "reimburse", "refund", "not received", "defect"]
+    },
+    {
+      "article_id": "Art.13",
+      "title": "Article 13: Obligations Upon Reoccurrence of the Flaw",
+      "text": "If the same flaw occurs in the commodity three (3) times during the first year from the consumer receiving it, and fundamentally affects the quality of its functionality, the provider shall either replace it with a new one of the same type and specifications without cost, or recover it and reimburse its value.",
+      "tags": ["repeated flaw", "replace", "reimburse", "refund", "first year"]
+    },
+    {
+      "article_id": "Art.15",
+      "title": "Article 15: Obligations of the Service Provider",
+      "text": "Contracts concluded by the provider shall provide for repair, maintenance or after-sales service, or the return or replacement of the commodity or the reimbursement of its value within a specified period from the date of the defect or flaw occurring.",
+      "tags": ["return", "replacement", "reimbursement", "refund", "period", "service"]
+    },
+    {
+      "article_id": "Art.19",
+      "title": "Article 19: Monopoly and Overcharging",
+      "text": "The provider is prohibited from concealing the commodity, refraining from selling it, adding terms for using the service, selling a commodity with another, or charging a price higher than the declared price.",
+      "tags": ["overcharge", "higher than declared price", "duplicate charge", "billing"]
+    },
+    {
+      "article_id": "Art.21",
+      "title": "Article 21: Prohibition of a Term Harmful to the Consumer",
+      "text": "The provider is prohibited from including any term upon contracting that would cause the consumer harm. Every term in a contract, invoice or otherwise shall be deemed void if it would exempt the provider from any of the obligations provided in this Law.",
+      "tags": ["harmful term", "void", "override", "exempt obligations", "unfair terms"]
+    },
+    {
+      "article_id": "Art.23",
+      "title": "Article 23: Use of Experts and Laboratories",
+      "text": "Whenever required, or in the event of a conflict between the provider and the consumer, the Ministry or competent authority may request to inspect the commodity or the service at the laboratories, on condition that the provider incurs the cost if the commodity is found invalid.",
+      "tags": ["conflict", "dispute", "inspection", "experts", "evidence", "review", "verification"]
+    },
+    {
+      "article_id": "Art.24",
+      "title": "Article 24: The Consumer's Right to Claim Compensation",
+      "text": "The consumer shall have the right to claim compensation for the personal or material damages caused to them as a result of using the commodity or the service. The damages resulting from misuse, or from use in a manner which violates the method of use, shall be excluded.",
+      "tags": ["compensation", "damages", "material damage", "misuse excluded", "consumer fault"]
+    },
+    {
+      "article_id": "Art.25",
+      "title": "Article 25: E-Commerce",
+      "text": "E-commerce providers registered within the State shall provide consumers and competent authorities with their names, legal statuses, addresses, licensing authorities and sufficient information in Arabic on the provided commodity or service, its specifications, terms of contracting, payment and warranty.",
+      "tags": ["e-commerce", "online", "payment", "terms of contracting", "warranty", "delivery"]
+    },
+    {
+      "article_id": "Art.35",
+      "title": "Article 35: Appeal",
+      "text": "Interested parties may appeal in writing to the Minister or the Head of the competent Authority within fifteen (15) working days of being notified of the resolution. A judgement on the appeal shall be made within thirty (30) days and shall be final.",
+      "tags": ["appeal", "dispute", "review", "deadline", "rejected"]
+    }
+  ]
+}

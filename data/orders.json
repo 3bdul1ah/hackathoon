@@ -1,0 +1,24 @@
+{
+  "ORD-A-100": {
+    "order_id": "ORD-A-100",
+    "customer_id": "CUST-1001",
+    "item": "UltraBook Pro 14 Laptop",
+    "amount": 3500.00,
+    "currency": "AED",
+    "status": "delivered",
+    "ordered_at": "2026-06-01T12:30:00Z",
+    "payment_ids": ["PAY-A-9001"],
+    "shipment_id": "SHP-A-100"
+  },
+  "ORD-B-200": {
+    "order_id": "ORD-B-200",
+    "customer_id": "CUST-2002",
+    "item": "NoiseCancel Headphones",
+    "amount": 450.00,
+    "currency": "AED",
+    "status": "delivered",
+    "ordered_at": "2026-06-08T08:05:00Z",
+    "payment_ids": ["PAY-B-7001", "PAY-B-7002"],
+    "shipment_id": "SHP-B-200"
+  }
+}

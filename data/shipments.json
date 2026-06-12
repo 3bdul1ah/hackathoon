@@ -1,0 +1,24 @@
+{
+  "ORD-A-100": {
+    "shipment_id": "SHP-A-100",
+    "order_id": "ORD-A-100",
+    "carrier": "Aramex",
+    "tracking_number": "ARMX-557701244",
+    "status": "delivered",
+    "delivered_at": "2026-06-04T15:42:00Z",
+    "delivery_confirmed": true,
+    "proof_of_delivery": "Signature captured: O. AL-FARSI",
+    "delivery_geo": "25.2048N, 55.2708E (registered address)"
+  },
+  "ORD-B-200": {
+    "shipment_id": "SHP-B-200",
+    "order_id": "ORD-B-200",
+    "carrier": "SMSA",
+    "tracking_number": "SMSA-99120033",
+    "status": "delivered",
+    "delivered_at": "2026-06-10T11:10:00Z",
+    "delivery_confirmed": true,
+    "proof_of_delivery": "Left at reception, photo on file",
+    "delivery_geo": "24.4539N, 54.3773E (registered address)"
+  }
+}

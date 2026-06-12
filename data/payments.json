@@ -1,0 +1,38 @@
+{
+  "PAY-A-9001": {
+    "payment_id": "PAY-A-9001",
+    "order_id": "ORD-A-100",
+    "customer_id": "CUST-1001",
+    "amount": 3500.00,
+    "currency": "AED",
+    "status": "settled",
+    "type": "card_payment",
+    "processor": "VISA-****4421",
+    "created_at": "2026-06-01T12:31:00Z"
+  },
+  "PAY-B-7001": {
+    "payment_id": "PAY-B-7001",
+    "order_id": "ORD-B-200",
+    "customer_id": "CUST-2002",
+    "amount": 450.00,
+    "currency": "AED",
+    "status": "authorization_hold",
+    "type": "auth_hold",
+    "processor": "MASTERCARD-****8810",
+    "created_at": "2026-06-08T08:05:30Z",
+    "auth_expires_at": "2026-06-15T08:05:30Z",
+    "note": "Temporary pre-authorization placed at checkout. Funds reserved, not captured."
+  },
+  "PAY-B-7002": {
+    "payment_id": "PAY-B-7002",
+    "order_id": "ORD-B-200",
+    "customer_id": "CUST-2002",
+    "amount": 450.00,
+    "currency": "AED",
+    "status": "settled",
+    "type": "card_payment",
+    "processor": "MASTERCARD-****8810",
+    "created_at": "2026-06-08T08:06:10Z",
+    "note": "Final captured charge for the order."
+  }
+}

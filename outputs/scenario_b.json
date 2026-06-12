@@ -1,0 +1,407 @@
+{
+  "final_state": {
+    "case_id": "CASE-B-0001",
+    "customer_id": "CUST-2002",
+    "order_id": "ORD-B-200",
+    "customer_message": "I think I was charged twice for my headphones.",
+    "human_decision": null,
+    "human_reviewer": null,
+    "provided_emirates_id": "784-1992-7654321-2",
+    "otp_verified": true,
+    "identity_factors": [
+      {
+        "factor": "Emirates ID format (784-YYYY-NNNNNNN-N)",
+        "passed": true
+      },
+      {
+        "factor": "Emirates ID matches account on file",
+        "passed": true
+      },
+      {
+        "factor": "One-time passcode (OTP) to registered phone",
+        "passed": true
+      }
+    ],
+    "issue_type": "duplicate_charge",
+    "identity_verified": true,
+    "evidence": {
+      "order": {
+        "order_id": "ORD-B-200",
+        "customer_id": "CUST-2002",
+        "item": "NoiseCancel Headphones",
+        "amount": 450.0,
+        "currency": "AED",
+        "status": "delivered",
+        "ordered_at": "2026-06-08T08:05:00Z",
+        "payment_ids": [
+          "PAY-B-7001",
+          "PAY-B-7002"
+        ],
+        "shipment_id": "SHP-B-200"
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-B-7001",
+          "order_id": "ORD-B-200",
+          "customer_id": "CUST-2002",
+          "amount": 450.0,
+          "currency": "AED",
+          "status": "authorization_hold",
+          "type": "auth_hold",
+          "processor": "MASTERCARD-****8810",
+          "created_at": "2026-06-08T08:05:30Z",
+          "auth_expires_at": "2026-06-15T08:05:30Z",
+          "note": "Temporary pre-authorization placed at checkout. Funds reserved, not captured."
+        },
+        {
+          "payment_id": "PAY-B-7002",
+          "order_id": "ORD-B-200",
+          "customer_id": "CUST-2002",
+          "amount": 450.0,
+          "currency": "AED",
+          "status": "settled",
+          "type": "card_payment",
+          "processor": "MASTERCARD-****8810",
+          "created_at": "2026-06-08T08:06:10Z",
+          "note": "Final captured charge for the order."
+        }
+      ],
+      "shipment": {
+        "shipment_id": "SHP-B-200",
+        "order_id": "ORD-B-200",
+        "carrier": "SMSA",
+        "tracking_number": "SMSA-99120033",
+        "status": "delivered",
+        "delivered_at": "2026-06-10T11:10:00Z",
+        "delivery_confirmed": true,
+        "proof_of_delivery": "Left at reception, photo on file",
+        "delivery_geo": "24.4539N, 54.3773E (registered address)"
+      },
+      "customer": {
+        "customer_id": "CUST-2002",
+        "name": "Sara Haddad",
+        "emirates_id": "784-1992-7654321-2",
+        "date_of_birth": "1992-03-21",
+        "registered_phone": "+971-55-xxx-8810",
+        "email": "sara.haddad@example.com",
+        "account_created_at": "2021-11-01T09:00:00Z",
+        "email_changed_at": null,
+        "phone_verified": true,
+        "previous_goodwill_credit": false,
+        "previous_goodwill_credit_at": null,
+        "refund_attempts_last_90d": 0,
+        "identity_check_result": "passed",
+        "identity_flag_reason": null
+      },
+      "delivery_confirmed": true,
+      "duplicate_charge_confirmed": false,
+      "authorization_hold_present": true
+    },
+    "risk_score": 0,
+    "risk_signals": [
+      {
+        "code": "DELIVERY_CONFIRMED",
+        "description": "Carrier confirmed delivery with proof of delivery.",
+        "weight": 25,
+        "present": false,
+        "evidence": null
+      },
+      {
+        "code": "RECENT_ACCOUNT_CHANGE",
+        "description": "Account contact details changed shortly before the dispute.",
+        "weight": 25,
+        "present": false,
+        "evidence": null
+      },
+      {
+        "code": "PREVIOUS_REFUND_ISSUED",
+        "description": "A goodwill credit/refund was already issued to this account.",
+        "weight": 20,
+        "present": false,
+        "evidence": null
+      },
+      {
+        "code": "MULTIPLE_REFUND_ATTEMPTS",
+        "description": "Multiple refund attempts on this account in the last 90 days.",
+        "weight": 20,
+        "present": false,
+        "evidence": null
+      },
+      {
+        "code": "IDENTITY_VERIFICATION_FAILURE",
+        "description": "Identity verification failed or could not be completed.",
+        "weight": 25,
+        "present": false,
+        "evidence": null
+      },
+      {
+        "code": "HIGH_VALUE_ORDER",
+        "description": "Disputed amount is high value, raising the stakes of an abusive refund.",
+        "weight": 10,
+        "present": false,
+        "evidence": null
+      },
+      {
+        "code": "DELIVERY_ADDRESS_MISMATCH",
+        "description": "Delivery location does not match the registered address.",
+        "weight": 15,
+        "present": false,
+        "evidence": null
+      },
+      {
+        "code": "PHONE_NOT_VERIFIED",
+        "description": "The account's phone number is not verified.",
+        "weight": 10,
+        "present": false,
+        "evidence": null
+      }
+    ],
+    "fraud_band": "LOW",
+    "fraud_typology": "No fraud indicators (billing confusion)",
+    "fraud_recommendation": "Safe to resolve per policy; no elevated review needed.",
+    "policy_version": "v1.0.0",
+    "recommended_action": "EXPLAIN_NO_REFUND",
+    "legal_citations": [
+      {
+        "article_id": "Art.8",
+        "title": "Article 8: Price of the Commodity and Service; Invoice",
+        "text": "The provider shall clearly write the price; advertising of prices must not be misleading; and the provider shall provide the consumer with a detailed invoice containing its trade name, address, commodity or service type, price and quantity and any other data prescribed by the Executive Regulation.",
+        "score": null,
+        "source": "policy_map"
+      },
+      {
+        "article_id": "Art.4",
+        "title": "Article 4: Consumer Rights",
+        "text": "All prescribed obligations are consumer rights, including: obtaining true information on the commodities or service; protecting consumers' privacy and data security and not using these for promotion; fair and quick settlement for consumers' disputes; and obtaining fair compensation for damages caused to them or their property as a result of purchasing or using the commodity or receiving the service.",
+        "score": null,
+        "source": "policy_map"
+      },
+      {
+        "article_id": "Art.19",
+        "title": "Article 19: Monopoly and Overcharging",
+        "text": "The provider is prohibited from concealing the commodity, refraining from selling it, adding terms for using the service, selling a commodity with another, or charging a price higher than the declared price.",
+        "score": 0.4147,
+        "source": "retrieval"
+      },
+      {
+        "article_id": "Art.1-Invoice",
+        "title": "Article 1: Definition: Invoice",
+        "text": "Invoice: Any instrument sufficient by itself to prove the transaction or contracting with the consumer on a commodity or service, provided it contains the data required by this Law or its Executive Regulation.",
+        "score": 0.244,
+        "source": "retrieval"
+      },
+      {
+        "article_id": "Art.12",
+        "title": "Article 12: Flaw in the Commodity or Service",
+        "text": "In case of discovering a flaw in the commodity or service, the provider shall repair, replace or recover the commodity and reimburse its price, or re-provide the service without charge, as prescribed by the Executive Regulation.",
+        "score": 0.2051,
+        "source": "retrieval"
+      }
+    ],
+    "legal_basis": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 8, Article 4, Article 19, Article 1-Invoice, Article 12.",
+    "legal_source": "UAE Federal Law No. (15) of 2020 on Consumer Protection",
+    "human_approval_status": "NOT_REQUIRED",
+    "audit_events": [
+      {
+        "timestamp": "2026-06-12T07:35:41.209165+00:00",
+        "node_name": "triage",
+        "tool_called": null,
+        "evidence_used": [],
+        "risk_score": 0,
+        "decision": "classified_issue=duplicate_charge",
+        "policy_version": null,
+        "rule_id": null,
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": null,
+        "detail": "Routed dispute as 'duplicate_charge'."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:41.209589+00:00",
+        "node_name": "identity_verification",
+        "tool_called": "verify_emirates_id",
+        "evidence_used": [
+          "emirates_id:***"
+        ],
+        "risk_score": 0,
+        "decision": "identity_verified=True",
+        "policy_version": null,
+        "rule_id": null,
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": null,
+        "detail": "Identity verified via Emirates ID + OTP. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:41.210045+00:00",
+        "node_name": "evidence_retrieval",
+        "tool_called": "get_order,get_payment,get_shipment",
+        "evidence_used": [
+          "order:ORD-B-200",
+          "payment:PAY-B-7001",
+          "payment:PAY-B-7002",
+          "shipment:SHP-B-200",
+          "customer:CUST-2002"
+        ],
+        "risk_score": 0,
+        "decision": "delivery_confirmed=True, duplicate_confirmed=False, auth_hold_present=True, incomplete=False",
+        "policy_version": null,
+        "rule_id": null,
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": null,
+        "detail": "Collected 2 payment record(s)."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:41.210408+00:00",
+        "node_name": "fraud_risk",
+        "tool_called": null,
+        "evidence_used": [],
+        "risk_score": 0,
+        "decision": "risk_score=0 band=LOW typology=No fraud indicators (billing confusion)",
+        "policy_version": null,
+        "rule_id": null,
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": null,
+        "detail": "Signals fired: none. Recommendation: Safe to resolve per policy; no elevated review needed."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:41.210766+00:00",
+        "node_name": "policy",
+        "tool_called": null,
+        "evidence_used": [],
+        "risk_score": 0,
+        "decision": "EXPLAIN_NO_REFUND",
+        "policy_version": "v1.0.0",
+        "rule_id": "R-004",
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": null,
+        "detail": "R-004: One charge is a temporary authorization hold that will be released automatically; only one real charge exists, so no refund is owed."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:41.211242+00:00",
+        "node_name": "legal_grounding",
+        "tool_called": "search_law",
+        "evidence_used": [
+          "Art.8",
+          "Art.4",
+          "Art.19",
+          "Art.1-Invoice",
+          "Art.12"
+        ],
+        "risk_score": 0,
+        "decision": "LAW_GROUNDED",
+        "policy_version": "v1.0.0",
+        "rule_id": null,
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": null,
+        "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 8, Article 4, Article 19, Article 1-Invoice, Article 12."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:41.211561+00:00",
+        "node_name": "decision",
+        "tool_called": null,
+        "evidence_used": [],
+        "risk_score": 0,
+        "decision": "EXPLAIN_NO_REFUND",
+        "policy_version": "v1.0.0",
+        "rule_id": "R-004",
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": null,
+        "detail": "No money movement; agent resolves autonomously."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:43.755863+00:00",
+        "node_name": "prepare_remedy",
+        "tool_called": null,
+        "evidence_used": [],
+        "risk_score": 0,
+        "decision": "NO_REFUND_EXPLAINED",
+        "policy_version": "v1.0.0",
+        "rule_id": "R-004",
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+        "detail": "No refund owed; explanation issued to customer."
+      },
+      {
+        "timestamp": "2026-06-12T07:35:43.757018+00:00",
+        "node_name": "audit_logger",
+        "tool_called": null,
+        "evidence_used": [],
+        "risk_score": 0,
+        "decision": "CASE_SEALED",
+        "policy_version": "v1.0.0",
+        "rule_id": null,
+        "human_approval_status": "NOT_REQUIRED",
+        "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+        "detail": "No refund owed; explanation issued to customer."
+      }
+    ],
+    "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+    "current_step": "audit_logger",
+    "identity_detail": "Identity verified via Emirates ID + OTP.",
+    "policy_decision": {
+      "policy_version": "v1.0.0",
+      "rule_id": "R-004",
+      "refund_allowed": false,
+      "requires_human_review": false,
+      "action": "EXPLAIN_NO_REFUND",
+      "reason": "One charge is a temporary authorization hold that will be released automatically; only one real charge exists, so no refund is owed.",
+      "legal_refs": [
+        "Art.8",
+        "Art.4"
+      ]
+    },
+    "refund_package": null,
+    "prompt_injection_detected": false,
+    "prompt_injection_detail": null,
+    "final_outcome": "No refund owed; explanation issued to customer.",
+    "evidence_incomplete": false,
+    "tool_failures": [],
+    "recovery_notes": [],
+    "refund_executed": false
+  },
+  "tool_call_log": [
+    {
+      "tool": "get_order",
+      "args": {
+        "order_id": "ORD-B-200"
+      },
+      "ok": true,
+      "summary": "order ORD-B-200 -> delivered"
+    },
+    {
+      "tool": "get_shipment",
+      "args": {
+        "order_id": "ORD-B-200"
+      },
+      "ok": true,
+      "summary": "shipment for ORD-B-200 -> delivered"
+    },
+    {
+      "tool": "get_payment",
+      "args": {
+        "payment_id": "PAY-B-7001"
+      },
+      "ok": true,
+      "summary": "payment PAY-B-7001 -> authorization_hold"
+    },
+    {
+      "tool": "get_payment",
+      "args": {
+        "payment_id": "PAY-B-7002"
+      },
+      "ok": true,
+      "summary": "payment PAY-B-7002 -> settled"
+    },
+    {
+      "tool": "search_law",
+      "args": {
+        "issue_type": "duplicate_charge",
+        "pin": [
+          "Art.8",
+          "Art.4"
+        ]
+      },
+      "ok": true,
+      "summary": "retrieved 5 article(s): Art.8, Art.4, Art.19, Art.1-Invoice, Art.12"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# Force a light theme regardless of the viewer's OS/browser setting.
+# The custom cards in app.py are designed for light backgrounds.
+[theme]
+base = "light"
+primaryColor = "#2563eb"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f5f7fb"
+textColor = "#1f2430"
+font = "sans serif"

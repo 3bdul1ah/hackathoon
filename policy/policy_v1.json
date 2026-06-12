@@ -1,0 +1,108 @@
+{
+  "policy_version": "v1.0.0",
+  "effective_date": "2026-01-01",
+  "owner": "Trust & Safety / Payments Risk",
+  "risk_threshold_human_review": 70,
+  "principles": [
+    "No refund is ever executed automatically by the agent.",
+    "prepare_refund only assembles a refund package; money movement is a separate, externally-gated step.",
+    "Any dispute scoring at or above the risk threshold is routed to a human reviewer.",
+    "Customers are never accused of fraud; elevated risk is communicated as 'additional verification required'.",
+    "Every decision must cite policy_version, rule_id and a decision_reason."
+  ],
+  "rules": [
+    {
+      "rule_id": "R-001",
+      "description": "Item-not-received claim on a confirmed delivery with elevated fraud risk must be routed to human review.",
+      "conditions": {
+        "issue_type": "item_not_received",
+        "delivery_confirmed": true,
+        "risk_score_gte": 70
+      },
+      "outcome": {
+        "refund_allowed": false,
+        "requires_human_review": true,
+        "action": "ROUTE_TO_HUMAN_REVIEW",
+        "reason": "Delivery is confirmed and multiple risk signals are present; a human must verify before any refund is prepared."
+      },
+      "legal_refs": [
+        "Art.4",
+        "Art.24",
+        "Art.23"
+      ]
+    },
+    {
+      "rule_id": "R-002",
+      "description": "Item-not-received claim on a confirmed delivery with low fraud risk may proceed to a prepared refund.",
+      "conditions": {
+        "issue_type": "item_not_received",
+        "delivery_confirmed": true,
+        "risk_score_lt": 70
+      },
+      "outcome": {
+        "refund_allowed": true,
+        "requires_human_review": false,
+        "action": "PREPARE_REFUND",
+        "reason": "Delivery confirmed but risk signals are low; goodwill refund may be prepared for execution."
+      },
+      "legal_refs": [
+        "Art.10",
+        "Art.15",
+        "Art.24"
+      ]
+    },
+    {
+      "rule_id": "R-003",
+      "description": "Two distinct settled charges matched to a single order is a confirmed duplicate and is refundable.",
+      "conditions": {
+        "issue_type": "duplicate_charge",
+        "duplicate_charge_confirmed": true
+      },
+      "outcome": {
+        "refund_allowed": true,
+        "requires_human_review": false,
+        "action": "PREPARE_REFUND",
+        "reason": "Two settled charges of equal amount matched to the same order; the duplicate settlement is refundable."
+      },
+      "legal_refs": [
+        "Art.8",
+        "Art.19",
+        "Art.15"
+      ]
+    },
+    {
+      "rule_id": "R-004",
+      "description": "An authorization hold alongside a single settled charge for the same order is NOT a duplicate and is not refundable.",
+      "conditions": {
+        "issue_type": "duplicate_charge",
+        "duplicate_charge_confirmed": false,
+        "authorization_hold_present": true
+      },
+      "outcome": {
+        "refund_allowed": false,
+        "requires_human_review": false,
+        "action": "EXPLAIN_NO_REFUND",
+        "reason": "One charge is a temporary authorization hold that will be released automatically; only one real charge exists, so no refund is owed."
+      },
+      "legal_refs": [
+        "Art.8",
+        "Art.4"
+      ]
+    },
+    {
+      "rule_id": "R-000",
+      "description": "Default safety fallback: anything unmatched is routed to a human.",
+      "conditions": {},
+      "outcome": {
+        "refund_allowed": false,
+        "requires_human_review": true,
+        "action": "ROUTE_TO_HUMAN_REVIEW",
+        "reason": "No specific rule matched; routed to human review as a safe default."
+      },
+      "legal_refs": [
+        "Art.4"
+      ]
+    }
+  ],
+  "legal_source": "UAE Federal Law No. (15) of 2020 on Consumer Protection"
+}
