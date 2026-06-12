@@ -203,7 +203,7 @@
     "human_approval_status": "NOT_REQUIRED",
     "audit_events": [
       {
-        "timestamp": "2026-06-12T08:49:33.388577+00:00",
+        "timestamp": "2026-06-12T09:15:22.960188+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -216,7 +216,7 @@
         "detail": "Routed dispute as 'duplicate_charge'."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.389194+00:00",
+        "timestamp": "2026-06-12T09:15:22.961240+00:00",
         "node_name": "identity_verification",
         "tool_called": "verify_emirates_id",
         "evidence_used": [
@@ -231,7 +231,7 @@
         "detail": "Identity verified via Emirates ID + OTP. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.390265+00:00",
+        "timestamp": "2026-06-12T09:15:22.963092+00:00",
         "node_name": "evidence_retrieval",
         "tool_called": "get_order,get_payment,get_shipment",
         "evidence_used": [
@@ -250,7 +250,7 @@
         "detail": "Collected 2 payment record(s)."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.390721+00:00",
+        "timestamp": "2026-06-12T09:15:22.964094+00:00",
         "node_name": "fraud_risk",
         "tool_called": null,
         "evidence_used": [],
@@ -263,7 +263,7 @@
         "detail": "Signals fired: none. Recommendation: Safe to resolve per policy; no elevated review needed."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.391243+00:00",
+        "timestamp": "2026-06-12T09:15:22.965014+00:00",
         "node_name": "policy",
         "tool_called": null,
         "evidence_used": [],
@@ -276,7 +276,7 @@
         "detail": "R-004: One charge is a temporary authorization hold that will be released automatically; only one real charge exists, so no refund is owed."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.392012+00:00",
+        "timestamp": "2026-06-12T09:15:22.966382+00:00",
         "node_name": "legal_grounding",
         "tool_called": "search_law",
         "evidence_used": [
@@ -295,7 +295,7 @@
         "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 8, Article 4, Article 19, Article 1-Invoice, Article 12."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.392371+00:00",
+        "timestamp": "2026-06-12T09:15:22.967045+00:00",
         "node_name": "decision",
         "tool_called": null,
         "evidence_used": [],
@@ -308,7 +308,7 @@
         "detail": "No money movement; agent resolves autonomously."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.392865+00:00",
+        "timestamp": "2026-06-12T09:15:22.968035+00:00",
         "node_name": "prepare_remedy",
         "tool_called": null,
         "evidence_used": [],
@@ -321,7 +321,7 @@
         "detail": "No refund owed; explanation issued to customer."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.393522+00:00",
+        "timestamp": "2026-06-12T09:15:22.969416+00:00",
         "node_name": "status_assurance",
         "tool_called": null,
         "evidence_used": [
@@ -336,7 +336,7 @@
         "detail": "Owner: Payments support automation. Next update: 2026-06-15T08:05:30+00:00. SLA due: 2026-06-15T08:05:30+00:00."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.393530+00:00",
+        "timestamp": "2026-06-12T09:15:22.969432+00:00",
         "node_name": "audit_logger",
         "tool_called": null,
         "evidence_used": [],

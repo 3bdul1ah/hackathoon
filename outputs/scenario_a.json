@@ -195,7 +195,7 @@
     "human_approval_status": "PENDING",
     "audit_events": [
       {
-        "timestamp": "2026-06-12T08:49:33.278512+00:00",
+        "timestamp": "2026-06-12T09:15:22.700879+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -208,7 +208,7 @@
         "detail": "Override attempt ignored: 'Ignore policy'. Workflow continues unchanged."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.278534+00:00",
+        "timestamp": "2026-06-12T09:15:22.700900+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -221,7 +221,7 @@
         "detail": "Routed dispute as 'item_not_received'."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.279123+00:00",
+        "timestamp": "2026-06-12T09:15:22.705696+00:00",
         "node_name": "identity_verification",
         "tool_called": "verify_emirates_id",
         "evidence_used": [
@@ -236,7 +236,7 @@
         "detail": "Identity verified via Emirates ID + OTP. Note: a recent email change is flagged for the reviewer. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.280121+00:00",
+        "timestamp": "2026-06-12T09:15:22.707827+00:00",
         "node_name": "evidence_retrieval",
         "tool_called": "get_order,get_payment,get_shipment",
         "evidence_used": [
@@ -254,7 +254,7 @@
         "detail": "Collected 1 payment record(s)."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.280533+00:00",
+        "timestamp": "2026-06-12T09:15:22.708782+00:00",
         "node_name": "fraud_risk",
         "tool_called": null,
         "evidence_used": [
@@ -273,7 +273,7 @@
         "detail": "Signals fired: DELIVERY_CONFIRMED, RECENT_ACCOUNT_CHANGE, PREVIOUS_REFUND_ISSUED, MULTIPLE_REFUND_ATTEMPTS, HIGH_VALUE_ORDER. Recommendation: Pause refund. Require step-up identity re-verification and manual review of the account-change and refund history before any payout."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.280982+00:00",
+        "timestamp": "2026-06-12T09:15:22.710097+00:00",
         "node_name": "policy",
         "tool_called": null,
         "evidence_used": [],
@@ -286,7 +286,7 @@
         "detail": "R-001: Delivery is confirmed and multiple risk signals are present; a human must verify before any refund is prepared."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.283023+00:00",
+        "timestamp": "2026-06-12T09:15:22.719426+00:00",
         "node_name": "legal_grounding",
         "tool_called": "search_law",
         "evidence_used": [
@@ -306,7 +306,7 @@
         "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 4, Article 24, Article 23, Article 10, Article 12, Article 25."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.283332+00:00",
+        "timestamp": "2026-06-12T09:15:22.720269+00:00",
         "node_name": "decision",
         "tool_called": null,
         "evidence_used": [],
@@ -319,7 +319,7 @@
         "detail": "High risk: mandatory human review before any remedy."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.283762+00:00",
+        "timestamp": "2026-06-12T09:15:22.721183+00:00",
         "node_name": "human_approval",
         "tool_called": "create_risk_case",
         "evidence_used": [],
@@ -329,10 +329,10 @@
         "rule_id": null,
         "human_approval_status": "PENDING",
         "customer_notice": null,
-        "detail": "Opened RC-1A4C65E2. Awaiting reviewer. No refund prepared."
+        "detail": "Opened RC-A1F03968. Awaiting reviewer. No refund prepared."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.284185+00:00",
+        "timestamp": "2026-06-12T09:15:22.722118+00:00",
         "node_name": "status_assurance",
         "tool_called": null,
         "evidence_used": [
@@ -345,10 +345,10 @@
         "rule_id": null,
         "human_approval_status": "PENDING",
         "customer_notice": "A specialist owns this review. You will receive an update within 30 minutes, even if the final decision needs more time.",
-        "detail": "Owner: Risk review specialist. Next update: 2026-06-12T09:19:33.284154+00:00. SLA due: 2026-06-12T12:49:33.284154+00:00."
+        "detail": "Owner: Risk review specialist. Next update: 2026-06-12T09:45:22.722064+00:00. SLA due: 2026-06-12T13:15:22.722064+00:00."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.284191+00:00",
+        "timestamp": "2026-06-12T09:15:22.722135+00:00",
         "node_name": "audit_logger",
         "tool_called": null,
         "evidence_used": [],
@@ -390,20 +390,20 @@
     "caregiver_phone": null,
     "senior_protection_flags": [],
     "senior_protection_summary": null,
-    "sla_due_at": "2026-06-12T12:49:33.284154+00:00",
-    "next_update_at": "2026-06-12T09:19:33.284154+00:00",
+    "sla_due_at": "2026-06-12T13:15:22.722064+00:00",
+    "next_update_at": "2026-06-12T09:45:22.722064+00:00",
     "assigned_owner": "Risk review specialist",
     "customer_waiting_message": "A specialist owns this review. You will receive an update within 30 minutes, even if the final decision needs more time.",
     "appeal_available": false,
     "follow_up_events": [
       {
         "type": "next_update",
-        "scheduled_at": "2026-06-12T09:19:33.284154+00:00",
+        "scheduled_at": "2026-06-12T09:45:22.722064+00:00",
         "message": "Send customer a review status update."
       },
       {
         "type": "sla_due",
-        "scheduled_at": "2026-06-12T12:49:33.284154+00:00",
+        "scheduled_at": "2026-06-12T13:15:22.722064+00:00",
         "message": "Escalate if the review is not decided."
       }
     ],
@@ -457,7 +457,7 @@
         "case_id": "CASE-A-0001"
       },
       "ok": true,
-      "summary": "opened RC-1A4C65E2 in MANUAL_REVIEW queue"
+      "summary": "opened RC-A1F03968 in MANUAL_REVIEW queue"
     }
   ]
 }

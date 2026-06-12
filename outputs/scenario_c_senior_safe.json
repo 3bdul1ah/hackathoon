@@ -194,7 +194,7 @@
     "human_approval_status": "PENDING",
     "audit_events": [
       {
-        "timestamp": "2026-06-12T08:49:33.424241+00:00",
+        "timestamp": "2026-06-12T09:15:23.039918+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -207,7 +207,7 @@
         "detail": "Routed dispute as 'unknown'."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.424850+00:00",
+        "timestamp": "2026-06-12T09:15:23.041014+00:00",
         "node_name": "identity_verification",
         "tool_called": "verify_emirates_id",
         "evidence_used": [
@@ -222,7 +222,7 @@
         "detail": "Identity verified via Emirates ID + OTP. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.426017+00:00",
+        "timestamp": "2026-06-12T09:15:23.043182+00:00",
         "node_name": "evidence_retrieval",
         "tool_called": "get_order,get_payment,get_shipment",
         "evidence_used": [
@@ -240,7 +240,7 @@
         "detail": "Collected 1 payment record(s)."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.426509+00:00",
+        "timestamp": "2026-06-12T09:15:23.044341+00:00",
         "node_name": "senior_support",
         "tool_called": null,
         "evidence_used": [
@@ -257,7 +257,7 @@
         "detail": "Potential scam or coercion targeting a senior: urgent payment pressure, suspicious payment method, third party instruction. Route to a human reviewer for protective verification."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.426520+00:00",
+        "timestamp": "2026-06-12T09:15:23.044364+00:00",
         "node_name": "fraud_risk",
         "tool_called": null,
         "evidence_used": [
@@ -272,7 +272,7 @@
         "detail": "Signals fired: SENIOR_SCAM_PRESSURE. Recommendation: Pause resolution. Verify directly with the customer, use the authorized caregiver only if consent is recorded, and do not act on urgent third-party instructions."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.427078+00:00",
+        "timestamp": "2026-06-12T09:15:23.045626+00:00",
         "node_name": "policy",
         "tool_called": null,
         "evidence_used": [],
@@ -285,7 +285,7 @@
         "detail": "R-000: No specific rule matched; routed to human review as a safe default."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.427669+00:00",
+        "timestamp": "2026-06-12T09:15:23.046718+00:00",
         "node_name": "legal_grounding",
         "tool_called": "search_law",
         "evidence_used": [
@@ -303,7 +303,7 @@
         "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 4, Article 10, Article 25, Article 12."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.427992+00:00",
+        "timestamp": "2026-06-12T09:15:23.047322+00:00",
         "node_name": "decision",
         "tool_called": null,
         "evidence_used": [],
@@ -316,7 +316,7 @@
         "detail": "Senior protection flags detected: human review required before closure."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.428439+00:00",
+        "timestamp": "2026-06-12T09:15:23.048274+00:00",
         "node_name": "human_approval",
         "tool_called": "create_risk_case",
         "evidence_used": [],
@@ -326,10 +326,10 @@
         "rule_id": null,
         "human_approval_status": "PENDING",
         "customer_notice": null,
-        "detail": "Opened RC-B3D9E0A2. Awaiting reviewer. No refund prepared."
+        "detail": "Opened RC-86419CAF. Awaiting reviewer. No refund prepared."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.428931+00:00",
+        "timestamp": "2026-06-12T09:15:23.049385+00:00",
         "node_name": "status_assurance",
         "tool_called": null,
         "evidence_used": [
@@ -343,10 +343,10 @@
         "rule_id": null,
         "human_approval_status": "PENDING",
         "customer_notice": "A specialist owns this protective review. We will not follow urgent third-party payment instructions, and you will receive an update within 30 minutes. Updates may also be shared with the authorized caregiver Mariam Al-Mansoori.",
-        "detail": "Owner: Senior protection specialist. Next update: 2026-06-12T09:19:33.428902+00:00. SLA due: 2026-06-12T12:49:33.428902+00:00."
+        "detail": "Owner: Senior protection specialist. Next update: 2026-06-12T09:45:23.049332+00:00. SLA due: 2026-06-12T13:15:23.049332+00:00."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.428938+00:00",
+        "timestamp": "2026-06-12T09:15:23.049400+00:00",
         "node_name": "audit_logger",
         "tool_called": null,
         "evidence_used": [],
@@ -390,25 +390,25 @@
       "THIRD_PARTY_INSTRUCTION"
     ],
     "senior_protection_summary": "Potential scam or coercion targeting a senior: urgent payment pressure, suspicious payment method, third party instruction. Route to a human reviewer for protective verification.",
-    "sla_due_at": "2026-06-12T12:49:33.428902+00:00",
-    "next_update_at": "2026-06-12T09:19:33.428902+00:00",
+    "sla_due_at": "2026-06-12T13:15:23.049332+00:00",
+    "next_update_at": "2026-06-12T09:45:23.049332+00:00",
     "assigned_owner": "Senior protection specialist",
     "customer_waiting_message": "A specialist owns this protective review. We will not follow urgent third-party payment instructions, and you will receive an update within 30 minutes. Updates may also be shared with the authorized caregiver Mariam Al-Mansoori.",
     "appeal_available": false,
     "follow_up_events": [
       {
         "type": "next_update",
-        "scheduled_at": "2026-06-12T09:19:33.428902+00:00",
+        "scheduled_at": "2026-06-12T09:45:23.049332+00:00",
         "message": "Send customer a review status update."
       },
       {
         "type": "sla_due",
-        "scheduled_at": "2026-06-12T12:49:33.428902+00:00",
+        "scheduled_at": "2026-06-12T13:15:23.049332+00:00",
         "message": "Escalate if the review is not decided."
       },
       {
         "type": "caregiver_update",
-        "scheduled_at": "2026-06-12T09:19:33.428902+00:00",
+        "scheduled_at": "2026-06-12T09:45:23.049332+00:00",
         "message": "Share status with authorized caregiver Mariam Al-Mansoori."
       }
     ],
@@ -460,7 +460,7 @@
         "case_id": "CASE-C-0001"
       },
       "ok": true,
-      "summary": "opened RC-B3D9E0A2 in MANUAL_REVIEW queue"
+      "summary": "opened RC-86419CAF in MANUAL_REVIEW queue"
     }
   ]
 }

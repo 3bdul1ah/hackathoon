@@ -195,7 +195,7 @@
     "human_approval_status": "APPROVED",
     "audit_events": [
       {
-        "timestamp": "2026-06-12T08:49:33.316008+00:00",
+        "timestamp": "2026-06-12T09:15:22.793766+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -208,7 +208,7 @@
         "detail": "Routed dispute as 'item_not_received'."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.316597+00:00",
+        "timestamp": "2026-06-12T09:15:22.794787+00:00",
         "node_name": "identity_verification",
         "tool_called": "verify_emirates_id",
         "evidence_used": [
@@ -223,7 +223,7 @@
         "detail": "Identity verified via Emirates ID + OTP. Note: a recent email change is flagged for the reviewer. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.317532+00:00",
+        "timestamp": "2026-06-12T09:15:22.802189+00:00",
         "node_name": "evidence_retrieval",
         "tool_called": "get_order,get_payment,get_shipment",
         "evidence_used": [
@@ -241,7 +241,7 @@
         "detail": "Collected 1 payment record(s)."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.317924+00:00",
+        "timestamp": "2026-06-12T09:15:22.803558+00:00",
         "node_name": "fraud_risk",
         "tool_called": null,
         "evidence_used": [
@@ -260,7 +260,7 @@
         "detail": "Signals fired: DELIVERY_CONFIRMED, RECENT_ACCOUNT_CHANGE, PREVIOUS_REFUND_ISSUED, MULTIPLE_REFUND_ATTEMPTS, HIGH_VALUE_ORDER. Recommendation: Pause refund. Require step-up identity re-verification and manual review of the account-change and refund history before any payout."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.318475+00:00",
+        "timestamp": "2026-06-12T09:15:22.804580+00:00",
         "node_name": "policy",
         "tool_called": null,
         "evidence_used": [],
@@ -273,7 +273,7 @@
         "detail": "R-001: Delivery is confirmed and multiple risk signals are present; a human must verify before any refund is prepared."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.319018+00:00",
+        "timestamp": "2026-06-12T09:15:22.805586+00:00",
         "node_name": "legal_grounding",
         "tool_called": "search_law",
         "evidence_used": [
@@ -293,7 +293,7 @@
         "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 4, Article 24, Article 23, Article 10, Article 12, Article 25."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.319335+00:00",
+        "timestamp": "2026-06-12T09:15:22.806146+00:00",
         "node_name": "decision",
         "tool_called": null,
         "evidence_used": [],
@@ -306,7 +306,7 @@
         "detail": "High risk: mandatory human review before any remedy."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.319739+00:00",
+        "timestamp": "2026-06-12T09:15:22.807040+00:00",
         "node_name": "human_approval",
         "tool_called": "create_risk_case",
         "evidence_used": [],
@@ -319,7 +319,7 @@
         "detail": "Reviewer risk.analyst@tamkeen approved the case."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.320161+00:00",
+        "timestamp": "2026-06-12T09:15:22.808086+00:00",
         "node_name": "prepare_remedy",
         "tool_called": "prepare_refund",
         "evidence_used": [],
@@ -329,10 +329,10 @@
         "rule_id": "R-001",
         "human_approval_status": "APPROVED",
         "customer_notice": "[Reply unavailable: OPENAI_API_KEY is not set in .env. Add a valid OpenAI key (sk-...) to .env.]",
-        "detail": "Refund package RF-6CB441E6 prepared (status PREPARED_PENDING_EXECUTION)."
+        "detail": "Refund package RF-13D28A82 prepared (status PREPARED_PENDING_EXECUTION)."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.320482+00:00",
+        "timestamp": "2026-06-12T09:15:22.808837+00:00",
         "node_name": "execute_refund",
         "tool_called": "execute_refund",
         "evidence_used": [],
@@ -342,10 +342,10 @@
         "rule_id": "R-001",
         "human_approval_status": "APPROVED",
         "customer_notice": null,
-        "detail": "Refund RF-6CB441E6 EXECUTED as EX-5332C35D."
+        "detail": "Refund RF-13D28A82 EXECUTED as EX-E84EAB47."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.320766+00:00",
+        "timestamp": "2026-06-12T09:15:22.809521+00:00",
         "node_name": "status_assurance",
         "tool_called": null,
         "evidence_used": [
@@ -358,10 +358,10 @@
         "rule_id": null,
         "human_approval_status": "APPROVED",
         "customer_notice": "Your refund was approved and issued to the original payment method. We will check the refund trace within 24 hours and keep the case open until the payment rail confirms it.",
-        "detail": "Owner: Payments operations. Next update: 2026-06-13T08:49:33.320746+00:00. SLA due: 2026-06-15T08:49:33.320746+00:00."
+        "detail": "Owner: Payments operations. Next update: 2026-06-13T09:15:22.809479+00:00. SLA due: 2026-06-15T09:15:22.809479+00:00."
       },
       {
-        "timestamp": "2026-06-12T08:49:33.320773+00:00",
+        "timestamp": "2026-06-12T09:15:22.809536+00:00",
         "node_name": "audit_logger",
         "tool_called": null,
         "evidence_used": [],
@@ -371,7 +371,7 @@
         "rule_id": null,
         "human_approval_status": "APPROVED",
         "customer_notice": "[Reply unavailable: OPENAI_API_KEY is not set in .env. Add a valid OpenAI key (sk-...) to .env.]",
-        "detail": "Refund RF-6CB441E6 EXECUTED as EX-5332C35D."
+        "detail": "Refund RF-13D28A82 EXECUTED as EX-E84EAB47."
       }
     ],
     "customer_notice": "[Reply unavailable: OPENAI_API_KEY is not set in .env. Add a valid OpenAI key (sk-...) to .env.]",
@@ -391,7 +391,7 @@
       ]
     },
     "refund_package": {
-      "refund_id": "RF-6CB441E6",
+      "refund_id": "RF-13D28A82",
       "order_id": "ORD-A-100",
       "customer_id": "CUST-1001",
       "amount": 3500.0,
@@ -400,14 +400,14 @@
       "reason": "Human-approved after review (R-001): Delivery is confirmed and multiple risk signals are present; a human must verify before any refund is prepared.",
       "requires_human_approval": true,
       "approved_by": "risk.analyst@tamkeen",
-      "prepared_at": "2026-06-12T08:49:33.320141+00:00",
-      "execution_id": "EX-5332C35D",
-      "executed_at": "2026-06-12T08:49:33.320463+00:00",
+      "prepared_at": "2026-06-12T09:15:22.808046+00:00",
+      "execution_id": "EX-E84EAB47",
+      "executed_at": "2026-06-12T09:15:22.808799+00:00",
       "idempotent_replay": false
     },
     "prompt_injection_detected": false,
     "prompt_injection_detail": null,
-    "final_outcome": "Refund RF-6CB441E6 EXECUTED as EX-5332C35D.",
+    "final_outcome": "Refund RF-13D28A82 EXECUTED as EX-E84EAB47.",
     "is_senior": false,
     "senior_mode_enabled": false,
     "preferred_language": "English",
@@ -417,20 +417,20 @@
     "caregiver_phone": null,
     "senior_protection_flags": [],
     "senior_protection_summary": null,
-    "sla_due_at": "2026-06-15T08:49:33.320746+00:00",
-    "next_update_at": "2026-06-13T08:49:33.320746+00:00",
+    "sla_due_at": "2026-06-15T09:15:22.809479+00:00",
+    "next_update_at": "2026-06-13T09:15:22.809479+00:00",
     "assigned_owner": "Payments operations",
     "customer_waiting_message": "Your refund was approved and issued to the original payment method. We will check the refund trace within 24 hours and keep the case open until the payment rail confirms it.",
     "appeal_available": false,
     "follow_up_events": [
       {
         "type": "refund_trace_check",
-        "scheduled_at": "2026-06-13T08:49:33.320746+00:00",
+        "scheduled_at": "2026-06-13T09:15:22.809479+00:00",
         "message": "Confirm refund trace status with payments ops."
       },
       {
         "type": "refund_eta",
-        "scheduled_at": "2026-06-15T08:49:33.320746+00:00",
+        "scheduled_at": "2026-06-15T09:15:22.809479+00:00",
         "message": "Expected refund arrival window for the customer."
       }
     ],
@@ -484,7 +484,7 @@
         "case_id": "CASE-A-0001"
       },
       "ok": true,
-      "summary": "opened RC-5F7B744C in MANUAL_REVIEW queue"
+      "summary": "opened RC-C6D745EC in MANUAL_REVIEW queue"
     },
     {
       "tool": "prepare_refund",
@@ -493,16 +493,16 @@
         "amount": 3500.0
       },
       "ok": true,
-      "summary": "prepared RF-6CB441E6 status=PREPARED_PENDING_EXECUTION (checks passed, NOT executed)"
+      "summary": "prepared RF-13D28A82 status=PREPARED_PENDING_EXECUTION (checks passed, NOT executed)"
     },
     {
       "tool": "execute_refund",
       "args": {
-        "refund_id": "RF-6CB441E6",
+        "refund_id": "RF-13D28A82",
         "amount": 3500.0
       },
       "ok": true,
-      "summary": "EXECUTED RF-6CB441E6 as EX-5332C35D (token=HUMAN:risk.analyst@tamkeen)"
+      "summary": "EXECUTED RF-13D28A82 as EX-E84EAB47 (token=HUMAN:risk.analyst@tamkeen)"
     }
   ]
 }
