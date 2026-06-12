@@ -86,6 +86,7 @@ def identity_node(state: CaseState) -> dict[str, Any]:
     result = identity_verify(
         customer,
         provided_emirates_id=state.provided_emirates_id,
+        provided_email=state.provided_email,
         otp_verified=state.otp_verified,
     )
     verified = result["verified"]
@@ -556,13 +557,14 @@ def run_case(case_id: str, customer_id: str, order_id: str | None,
              human_reviewer: str | None = None,
              simulate_failures: set[str] | None = None,
              provided_emirates_id: str | None = None,
+             provided_email: str | None = None,
              otp_verified: bool = False) -> CaseState:
     """Run the graph end-to-end and return the final typed state.
 
     simulate_failures: tool names to force-fail (e.g. {"get_order"}) so the
     recovery path can be demonstrated live.
-    provided_emirates_id / otp_verified: identity factors the customer supplied
-    during the pre-dispute verification gate.
+    provided_emirates_id / provided_email / otp_verified: identity factors the
+    customer supplied during the pre-dispute verification gate.
     """
     tools.reset_tool_log()
     tools.SIMULATE_FAILURES.clear()
@@ -577,6 +579,7 @@ def run_case(case_id: str, customer_id: str, order_id: str | None,
         human_decision=human_decision,  # type: ignore[arg-type]
         human_reviewer=human_reviewer,
         provided_emirates_id=provided_emirates_id,
+        provided_email=provided_email,
         otp_verified=otp_verified,
     )
     app = build_graph()

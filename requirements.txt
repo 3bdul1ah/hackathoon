@@ -3,6 +3,7 @@ langchain-core>=0.3.0
 pydantic>=2.6
 streamlit>=1.33
 python-dotenv>=1.0
+supabase>=2.0
 # Optional: only used for natural-language customer notices. The system runs
 # fully deterministically without it.
 openai>=1.30

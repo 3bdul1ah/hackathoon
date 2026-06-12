@@ -124,6 +124,7 @@ class CaseState(BaseModel):
 
     # --- identity verification (collected BEFORE the dispute is processed) ---
     provided_emirates_id: Optional[str] = None
+    provided_email: Optional[str] = None
     otp_verified: bool = False
     identity_factors: list[dict] = Field(default_factory=list)
 

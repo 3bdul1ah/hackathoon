@@ -5,12 +5,14 @@
 
 HOW TO LOG IN (on the 'Get help' tab):
   1. Type the Emirates ID below into the 'Emirates ID' box.
-  2. Click 'Send OTP'. A mock SMS code appears on screen (no real SMS).
-  3. Type that code into the OTP box.
-  4. Click 'Verify identity', then type your issue in one box.
+  2. Type the registered email address from the profile block below.
+  3. Click 'Send email OTP'. A real Supabase email is sent when the project
+     is configured; otherwise a demo code appears on screen.
+  4. Type that code into the email OTP box.
+  5. Click 'Verify identity', then type your issue in one box.
 
-Note: the OTP is generated fresh each time and shown on screen, so it
-is NOT listed here. Everything below is mocked demo data.
+Note: the demo code is generated fresh each time and shown on screen when
+Supabase is not configured. Everything below is mocked demo data.
 
 ----------------------------------------------------------------------
 PROFILE: Omar Al-Farsi

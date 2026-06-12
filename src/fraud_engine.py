@@ -55,7 +55,7 @@ def _evidence_text(code: str, evidence: Evidence, customer: dict[str, Any],
     if code == "MULTIPLE_REFUND_ATTEMPTS":
         return f"{customer.get('refund_attempts_last_90d',0)} refund attempts in the last 90 days."
     if code == "IDENTITY_VERIFICATION_FAILURE":
-        return "Emirates ID / OTP verification did not pass."
+        return "Emirates ID / email OTP verification did not pass."
     if code == "HIGH_VALUE_ORDER":
         return f"Order value {order.get('currency','AED')} {order.get('amount',0):,.2f} (threshold {HIGH_VALUE_AED})."
     if code == "DELIVERY_ADDRESS_MISMATCH":
@@ -75,7 +75,7 @@ def _classify(fired: set[str], issue_type: str, score: int) -> tuple[str, str]:
                 "review of the account-change and refund history before any payout.")
     if "IDENTITY_VERIFICATION_FAILURE" in fired:
         return ("Identity verification failure",
-                "Do not proceed. Re-run Emirates ID + OTP verification; route to a human.")
+                "Do not proceed. Re-run Emirates ID + email OTP verification; route to a human.")
     if "DELIVERY_CONFIRMED" in fired and "RECENT_ACCOUNT_CHANGE" not in fired:
         return ("First-party (friendly) fraud risk: item-not-received on a confirmed delivery",
                 "Hold refund for human review; compare proof-of-delivery against the claim.")

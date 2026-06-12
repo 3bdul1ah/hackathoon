@@ -7,6 +7,7 @@
     "human_decision": null,
     "human_reviewer": null,
     "provided_emirates_id": "784-1992-7654321-2",
+    "provided_email": "sara.haddad@example.com",
     "otp_verified": true,
     "identity_factors": [
       {
@@ -18,7 +19,11 @@
         "passed": true
       },
       {
-        "factor": "One-time passcode (OTP) to registered phone",
+        "factor": "Registered email matches account on file",
+        "passed": true
+      },
+      {
+        "factor": "One-time passcode (email OTP) to registered email",
         "passed": true
       }
     ],
@@ -203,7 +208,7 @@
     "human_approval_status": "NOT_REQUIRED",
     "audit_events": [
       {
-        "timestamp": "2026-06-12T07:35:41.209165+00:00",
+        "timestamp": "2026-06-12T08:20:24.384854+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -216,7 +221,7 @@
         "detail": "Routed dispute as 'duplicate_charge'."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.209589+00:00",
+        "timestamp": "2026-06-12T08:20:24.385286+00:00",
         "node_name": "identity_verification",
         "tool_called": "verify_emirates_id",
         "evidence_used": [
@@ -228,10 +233,10 @@
         "rule_id": null,
         "human_approval_status": "NOT_REQUIRED",
         "customer_notice": null,
-        "detail": "Identity verified via Emirates ID + OTP. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
+        "detail": "Identity verified via Emirates ID + registered email + email OTP. Factors passed: Emirates ID format, Emirates ID matches account on file, Registered email matches account on file, One-time passcode."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.210045+00:00",
+        "timestamp": "2026-06-12T08:20:24.385740+00:00",
         "node_name": "evidence_retrieval",
         "tool_called": "get_order,get_payment,get_shipment",
         "evidence_used": [
@@ -250,7 +255,7 @@
         "detail": "Collected 2 payment record(s)."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.210408+00:00",
+        "timestamp": "2026-06-12T08:20:24.386067+00:00",
         "node_name": "fraud_risk",
         "tool_called": null,
         "evidence_used": [],
@@ -263,7 +268,7 @@
         "detail": "Signals fired: none. Recommendation: Safe to resolve per policy; no elevated review needed."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.210766+00:00",
+        "timestamp": "2026-06-12T08:20:24.386407+00:00",
         "node_name": "policy",
         "tool_called": null,
         "evidence_used": [],
@@ -276,7 +281,7 @@
         "detail": "R-004: One charge is a temporary authorization hold that will be released automatically; only one real charge exists, so no refund is owed."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.211242+00:00",
+        "timestamp": "2026-06-12T08:20:24.386844+00:00",
         "node_name": "legal_grounding",
         "tool_called": "search_law",
         "evidence_used": [
@@ -295,7 +300,7 @@
         "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 8, Article 4, Article 19, Article 1-Invoice, Article 12."
       },
       {
-        "timestamp": "2026-06-12T07:35:41.211561+00:00",
+        "timestamp": "2026-06-12T08:20:24.387150+00:00",
         "node_name": "decision",
         "tool_called": null,
         "evidence_used": [],
@@ -308,7 +313,7 @@
         "detail": "No money movement; agent resolves autonomously."
       },
       {
-        "timestamp": "2026-06-12T07:35:43.755863+00:00",
+        "timestamp": "2026-06-12T08:20:25.717493+00:00",
         "node_name": "prepare_remedy",
         "tool_called": null,
         "evidence_used": [],
@@ -317,11 +322,11 @@
         "policy_version": "v1.0.0",
         "rule_id": "R-004",
         "human_approval_status": "NOT_REQUIRED",
-        "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+        "customer_notice": "[Reply unavailable: OpenAI call failed (APIConnectionError: Connection error.). Check OPENAI_API_KEY in .env.]",
         "detail": "No refund owed; explanation issued to customer."
       },
       {
-        "timestamp": "2026-06-12T07:35:43.757018+00:00",
+        "timestamp": "2026-06-12T08:20:25.718356+00:00",
         "node_name": "audit_logger",
         "tool_called": null,
         "evidence_used": [],
@@ -330,13 +335,13 @@
         "policy_version": "v1.0.0",
         "rule_id": null,
         "human_approval_status": "NOT_REQUIRED",
-        "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+        "customer_notice": "[Reply unavailable: OpenAI call failed (APIConnectionError: Connection error.). Check OPENAI_API_KEY in .env.]",
         "detail": "No refund owed; explanation issued to customer."
       }
     ],
-    "customer_notice": "Thank you for your patience while we reviewed your dispute. We want to reassure you that there is only one real charge on your order. The second entry you saw is a temporary authorization hold placed by your bank, which will be released automatically within a few days. Since no refund is owed, please feel free to reach out if you have any further questions. We are here to help.",
+    "customer_notice": "[Reply unavailable: OpenAI call failed (APIConnectionError: Connection error.). Check OPENAI_API_KEY in .env.]",
     "current_step": "audit_logger",
-    "identity_detail": "Identity verified via Emirates ID + OTP.",
+    "identity_detail": "Identity verified via Emirates ID + registered email + email OTP.",
     "policy_decision": {
       "policy_version": "v1.0.0",
       "rule_id": "R-004",

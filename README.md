@@ -28,6 +28,10 @@ fallback: if the key is missing or invalid, replies show a clear error. The
 fraud and policy engines and passed to the model as grounding, so wording can
 never change a decision, amount, or policy.
 
+For real email OTPs, set `SUPABASE_URL` and `SUPABASE_KEY` in `.env` and install
+the `supabase` Python package. Without those values, the login step falls back to
+a local demo code so the UI still runs.
+
 > Put a real OpenAI key (`OPENAI_API_KEY=sk-...`) in `.env`. A GitHub token
 > (`ghp_...`) or any non-`sk-` value will fail with a 401.
 
@@ -62,7 +66,7 @@ hackathon/
 │   ├── fraud_engine.py     # signals → score + named fraud typology + mitigation
 │   ├── policy_engine.py    # versioned, file-driven rule evaluation
 │   ├── injection_guard.py  # prompt-injection / policy-override defense
-│   ├── identity.py         # Emirates ID + OTP verification (mocked)
+│   ├── identity.py         # Emirates ID + email OTP verification (mocked)
 │   ├── case_store.py       # shared in-process queue (Customer page → Staff console)
 │   ├── rag.py              # RAG agent: TF-IDF retrieval over the UAE law
 │   ├── notice.py           # customer notices (generated live by OpenAI)
@@ -79,7 +83,7 @@ hackathon/
 ## The agent graph
 
 ```
-Verify Emirates ID + OTP  (BEFORE the dispute)
+Verify Emirates ID + email OTP  (BEFORE the dispute)
    → Triage → Identity → Evidence (retry + recovery) → Fraud → Policy
    → RAG Legal Agent (UAE Law No.15/2020) → Decision
    No money (explain)      → Prepare Remedy → Execute (skipped) → Audit → END

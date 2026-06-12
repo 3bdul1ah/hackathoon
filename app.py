@@ -1,8 +1,9 @@
 """Streamlit UI for the Agentic Dispute Resolution Platform.
 
-One unified help box: the customer verifies their identity (Emirates ID + OTP),
-then describes any issue in a single message. The agent triages it, pulls that
-customer's order, and resolves it, pausing for a human before any money moves.
+One unified help box: the customer verifies their identity (Emirates ID +
+email OTP), then describes any issue in a single message. The agent triages
+it, pulls that customer's order, and resolves it, pausing for a human before
+any money moves.
 
 Two audiences from one run:
   * Customers: a clean, plain-language help experience.
@@ -12,7 +13,6 @@ from __future__ import annotations
 
 import json
 import os
-import random
 import uuid
 
 try:
@@ -29,6 +29,7 @@ from src.tools import (TOOL_CALL_LOG, TOOL_PERMISSIONS, get_customer,
 from src.fraud_engine import RISK_THRESHOLD
 from src.identity import valid_eid_format
 from src import case_store
+from src.supabase_auth import request_email_otp, verify_email_otp
 
 ADMIN_CODE = "tamkeen-staff"   # demo staff access code (see DEMO_LOGINS.txt)
 
@@ -294,7 +295,7 @@ def render_fraud(state):
 ARCH_DOT = r"""
 digraph G {
   rankdir=TB; node [shape=box, style="rounded,filled", fontname="Helvetica", fillcolor="#eef2ff"];
-  eid    [label="Emirates ID + OTP\n(verify BEFORE the dispute)", fillcolor="#f3f7ff"];
+  eid    [label="Emirates ID + email OTP\n(verify BEFORE the dispute)", fillcolor="#f3f7ff"];
   req    [label="Customer Request (one box)", fillcolor="#e7f6ec"];
   triage [label="1. Triage\n(classify + injection guard)"];
   ident  [label="2. Identity Agent\nre-checks Emirates ID factors"];
@@ -330,43 +331,98 @@ def customer_page(outage):
     if not st.session_state.get("verified"):
         card("blue", "Step 1: Verify your identity",
              "Before we look at any order or payment, please confirm who you are. "
-             "This is a mocked UAE PASS / Emirates ID step.")
+             "Use your Emirates ID and the email OTP sent to your registered email.")
         eid = st.text_input("Emirates ID (784-YYYY-NNNNNNN-N)", key="eid_in",
                             placeholder="784-YYYY-NNNNNNN-N")
+        email = st.text_input("Registered email address", key="email_in",
+                              placeholder="name@example.com")
         col1, col2 = st.columns([1, 1])
-        if col1.button("Send OTP", key="send_otp"):
+        if col1.button("Send email OTP", key="send_otp"):
             cid_lookup, c_lookup = customer_by_eid(eid)
-            if cid_lookup:
-                st.session_state.otp = f"{random.randint(0, 999999):06d}"
-                st.session_state.otp_phone = c_lookup.get("registered_phone", "")
-                st.session_state.pop("otp_error", None)
+            email_on_file = (c_lookup or {}).get("email")
+            email_ok = bool(email_on_file and email.strip()
+                            and email.strip().casefold() == str(email_on_file).strip().casefold())
+            if not cid_lookup:
+                st.session_state.pop("otp_mode", None)
+                st.session_state.pop("otp_code", None)
+                st.session_state.pop("otp_email", None)
+                st.session_state.pop("otp_message", None)
+                st.session_state.otp_error = "We could not find an account for that Emirates ID."
+            elif not email_ok:
+                st.session_state.pop("otp_mode", None)
+                st.session_state.pop("otp_code", None)
+                st.session_state.pop("otp_email", None)
+                st.session_state.pop("otp_message", None)
+                st.session_state.otp_error = "The email does not match the account on file."
             else:
-                st.session_state.pop("otp", None)
-                st.session_state.otp_error = True
-        if st.session_state.get("otp_error") and not st.session_state.get("otp"):
-            card("red", "Emirates ID not recognized",
-                 "We could not find an account for that Emirates ID.")
-        otp = st.session_state.get("otp")
-        if otp:
-            col2.markdown(f'<div class="card card-grey">Mock SMS to '
-                          f'{st.session_state.get("otp_phone","")} . demo code <b>{otp}</b></div>',
+                send_result = request_email_otp(email)
+                st.session_state.otp_email = email.strip()
+                st.session_state.otp_message = send_result.message
+                if send_result.demo_code:
+                    st.session_state.otp_mode = "demo"
+                    st.session_state.otp_code = send_result.demo_code
+                    st.session_state.pop("otp_error", None)
+                elif send_result.delivered:
+                    st.session_state.otp_mode = "supabase"
+                    st.session_state.pop("otp_code", None)
+                    st.session_state.pop("otp_error", None)
+                else:
+                    st.session_state.pop("otp_mode", None)
+                    st.session_state.pop("otp_code", None)
+                    st.session_state.pop("otp_email", None)
+                    st.session_state.pop("otp_message", None)
+                    st.session_state.otp_error = send_result.message
+        if st.session_state.get("otp_error") and not st.session_state.get("otp_mode"):
+            card("red", "Could not send email OTP",
+                 st.session_state.get("otp_error", "We could not send the email OTP."))
+        otp_mode = st.session_state.get("otp_mode")
+        otp_email = st.session_state.get("otp_email")
+        if otp_mode == "demo" and st.session_state.get("otp_code"):
+            col2.markdown(f'<div class="card card-amber">{st.session_state.get("otp_message", "")} '
+                          f'Demo email OTP to <b>{otp_email}</b> — local code '
+                          f'<b>{st.session_state.get("otp_code")}</b> — no real email was sent.'
+                          f'</div>',
                           unsafe_allow_html=True)
-        otp_in = st.text_input("Enter the 6-digit code", key="otp_in", max_chars=6, disabled=not otp)
-        if st.button("Verify identity", type="primary", use_container_width=True, disabled=not otp):
+        elif otp_mode == "supabase":
+            col2.markdown(f'<div class="card card-green">{st.session_state.get("otp_message", "")} '
+                          f'A real email OTP was sent to <b>{otp_email}</b>. '
+                          f'Check that inbox for the 6-digit code.</div>',
+                          unsafe_allow_html=True)
+        otp_in = st.text_input("Enter the 6-digit email code", key="otp_in", max_chars=6,
+                               disabled=not otp_mode)
+        if st.button("Verify identity", type="primary", use_container_width=True, disabled=not otp_mode):
             cid, _ = customer_by_eid(eid)
+            email_on_file = (get_customer(cid) or {}).get("email") if cid else None
             eid_ok = valid_eid_format(eid) and cid is not None
-            otp_ok = bool(otp) and otp_in.strip() == otp
-            if eid_ok and otp_ok:
-                st.session_state.verified = True
-                st.session_state.customer_id = cid
-                st.session_state.factors = {"emirates_id": eid.strip(), "otp_verified": True}
-                st.session_state.pop("otp_error", None)
-                st.rerun()
+            email_ok = bool(email_on_file and email.strip()
+                            and email.strip().casefold() == str(email_on_file).strip().casefold())
+            if eid_ok and email_ok:
+                if otp_mode == "demo":
+                    otp_ok = bool(st.session_state.get("otp_code")) and otp_in.strip() == st.session_state.get("otp_code")
+                    otp_error = "Tap Send email OTP and use the demo code shown."
+                else:
+                    otp_ok, otp_error = verify_email_otp(email_on_file, otp_in)
+                if eid_ok and email_ok and otp_ok:
+                    st.session_state.verified = True
+                    st.session_state.customer_id = cid
+                    st.session_state.factors = {
+                        "emirates_id": eid.strip(),
+                        "provided_email": email.strip(),
+                        "otp_verified": True,
+                    }
+                    st.session_state.pop("otp_error", None)
+                    st.rerun()
+                elif otp_mode == "demo":
+                    card("red", "Incorrect code",
+                         "That demo code did not match the value shown on screen.")
+                else:
+                    card("red", "Incorrect or expired email code", otp_error)
             elif not eid_ok:
                 card("red", "Could not verify",
                      "That Emirates ID does not match any account or is malformed.")
             else:
-                card("red", "Incorrect code", "Tap Send OTP and use the demo code shown.")
+                card("red", "Email mismatch",
+                     "Use the registered email address for this Emirates ID.")
         return
 
     # ---- Step 2: one box for any issue ----
@@ -375,7 +431,9 @@ def customer_page(outage):
     card("green", "Identity verified",
          f"Welcome back, <b>{cust.get('name', cid)}</b>. How can we help you today?")
     if st.button("Not you? Switch identity"):
-        for k in ("verified", "customer_id", "factors", "otp", "case", "help_state"):
+        for k in ("verified", "customer_id", "factors", "otp", "otp_code", "otp_email",
+                  "otp_error", "otp_message", "otp_mode", "case", "help_state",
+                  "eid_in", "email_in", "otp_in"):
             st.session_state.pop(k, None)
         st.rerun()
 
@@ -387,7 +445,8 @@ def customer_page(outage):
     run_kwargs = dict(
         case_id=st.session_state.get("case") or ("CASE-" + uuid.uuid4().hex[:6].upper()),
         customer_id=cid, order_id=order_for_customer(cid), customer_message=msg,
-        provided_emirates_id=f["emirates_id"], otp_verified=f["otp_verified"],
+        provided_emirates_id=f["emirates_id"], provided_email=f["provided_email"],
+        otp_verified=f["otp_verified"],
         simulate_failures={"get_order"} if outage else None)
     st.session_state.case = run_kwargs["case_id"]
 
@@ -534,7 +593,7 @@ and a human signs off before money moves.
 | Auditability (15) | `AuditEvent` written by every node; Audit trail + raw JSON |
 | Policy Grounding + Remedy (10) | `policy/policy_v1.json` + **RAG over UAE Law No.15/2020** (`src/rag.py`); decisions cite version, rule, and law articles |
 | Demo Clarity (10) | separate Customer and Staff pages, real-vs-mocked panel |
-| Innovation (5) | RAG legal agent + fraud typologies + prompt-injection defense + Emirates ID / OTP |
+| Innovation (5) | RAG legal agent + fraud typologies + prompt-injection defense + Emirates ID / email OTP |
 """)
 
 

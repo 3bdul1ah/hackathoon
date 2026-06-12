@@ -7,6 +7,7 @@
     "human_decision": null,
     "human_reviewer": null,
     "provided_emirates_id": "784-1989-1234567-1",
+    "provided_email": "omar.alfarsi.new@example.com",
     "otp_verified": true,
     "identity_factors": [
       {
@@ -18,7 +19,11 @@
         "passed": true
       },
       {
-        "factor": "One-time passcode (OTP) to registered phone",
+        "factor": "Registered email matches account on file",
+        "passed": true
+      },
+      {
+        "factor": "One-time passcode (email OTP) to registered email",
         "passed": true
       }
     ],
@@ -195,7 +200,7 @@
     "human_approval_status": "PENDING",
     "audit_events": [
       {
-        "timestamp": "2026-06-12T07:35:34.030651+00:00",
+        "timestamp": "2026-06-12T08:20:20.515969+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -208,7 +213,7 @@
         "detail": "Override attempt ignored: 'Ignore policy'. Workflow continues unchanged."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.030662+00:00",
+        "timestamp": "2026-06-12T08:20:20.515980+00:00",
         "node_name": "triage",
         "tool_called": null,
         "evidence_used": [],
@@ -221,7 +226,7 @@
         "detail": "Routed dispute as 'item_not_received'."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.031174+00:00",
+        "timestamp": "2026-06-12T08:20:20.516476+00:00",
         "node_name": "identity_verification",
         "tool_called": "verify_emirates_id",
         "evidence_used": [
@@ -233,10 +238,10 @@
         "rule_id": null,
         "human_approval_status": "NOT_REQUIRED",
         "customer_notice": null,
-        "detail": "Identity verified via Emirates ID + OTP. Note: a recent email change is flagged for the reviewer. Factors passed: Emirates ID format, Emirates ID matches account on file, One-time passcode."
+        "detail": "Identity verified via Emirates ID + registered email + email OTP. Note: a recent email change is flagged for the reviewer. Factors passed: Emirates ID format, Emirates ID matches account on file, Registered email matches account on file, One-time passcode."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.031649+00:00",
+        "timestamp": "2026-06-12T08:20:20.516922+00:00",
         "node_name": "evidence_retrieval",
         "tool_called": "get_order,get_payment,get_shipment",
         "evidence_used": [
@@ -254,7 +259,7 @@
         "detail": "Collected 1 payment record(s)."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.032030+00:00",
+        "timestamp": "2026-06-12T08:20:20.517276+00:00",
         "node_name": "fraud_risk",
         "tool_called": null,
         "evidence_used": [
@@ -273,7 +278,7 @@
         "detail": "Signals fired: DELIVERY_CONFIRMED, RECENT_ACCOUNT_CHANGE, PREVIOUS_REFUND_ISSUED, MULTIPLE_REFUND_ATTEMPTS, HIGH_VALUE_ORDER. Recommendation: Pause refund. Require step-up identity re-verification and manual review of the account-change and refund history before any payout."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.032393+00:00",
+        "timestamp": "2026-06-12T08:20:20.517643+00:00",
         "node_name": "policy",
         "tool_called": null,
         "evidence_used": [],
@@ -286,7 +291,7 @@
         "detail": "R-001: Delivery is confirmed and multiple risk signals are present; a human must verify before any refund is prepared."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.033436+00:00",
+        "timestamp": "2026-06-12T08:20:20.518672+00:00",
         "node_name": "legal_grounding",
         "tool_called": "search_law",
         "evidence_used": [
@@ -306,7 +311,7 @@
         "detail": "Grounded in UAE Federal Law No. (15) of 2020 on Consumer Protection: Article 4, Article 24, Article 23, Article 10, Article 12, Article 25."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.033796+00:00",
+        "timestamp": "2026-06-12T08:20:20.519023+00:00",
         "node_name": "decision",
         "tool_called": null,
         "evidence_used": [],
@@ -319,7 +324,7 @@
         "detail": "High risk: mandatory human review before any remedy."
       },
       {
-        "timestamp": "2026-06-12T07:35:34.034209+00:00",
+        "timestamp": "2026-06-12T08:20:20.519449+00:00",
         "node_name": "human_approval",
         "tool_called": "create_risk_case",
         "evidence_used": [],
@@ -329,10 +334,10 @@
         "rule_id": null,
         "human_approval_status": "PENDING",
         "customer_notice": null,
-        "detail": "Opened RC-010B3B74. Awaiting reviewer. No refund prepared."
+        "detail": "Opened RC-9B081586. Awaiting reviewer. No refund prepared."
       },
       {
-        "timestamp": "2026-06-12T07:35:36.195240+00:00",
+        "timestamp": "2026-06-12T08:20:21.978327+00:00",
         "node_name": "audit_logger",
         "tool_called": null,
         "evidence_used": [],
@@ -341,13 +346,13 @@
         "policy_version": "v1.0.0",
         "rule_id": null,
         "human_approval_status": "PENDING",
-        "customer_notice": "Thank you for your patience. Your request is currently under review by a human specialist for additional verification. There is nothing required from you at this time. We will follow up with you shortly to provide an update. If you have any questions in the meantime, please feel free to reach out.",
+        "customer_notice": "[Reply unavailable: OpenAI call failed (APIConnectionError: Connection error.). Check OPENAI_API_KEY in .env.]",
         "detail": "Case paused, awaiting human reviewer. NO refund executed."
       }
     ],
-    "customer_notice": "Thank you for your patience. Your request is currently under review by a human specialist for additional verification. There is nothing required from you at this time. We will follow up with you shortly to provide an update. If you have any questions in the meantime, please feel free to reach out.",
+    "customer_notice": "[Reply unavailable: OpenAI call failed (APIConnectionError: Connection error.). Check OPENAI_API_KEY in .env.]",
     "current_step": "audit_logger",
-    "identity_detail": "Identity verified via Emirates ID + OTP. Note: a recent email change is flagged for the reviewer.",
+    "identity_detail": "Identity verified via Emirates ID + registered email + email OTP. Note: a recent email change is flagged for the reviewer.",
     "policy_decision": {
       "policy_version": "v1.0.0",
       "rule_id": "R-001",
@@ -414,7 +419,7 @@
         "case_id": "CASE-A-0001"
       },
       "ok": true,
-      "summary": "opened RC-010B3B74 in MANUAL_REVIEW queue"
+      "summary": "opened RC-9B081586 in MANUAL_REVIEW queue"
     }
   ]
 }

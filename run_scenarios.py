@@ -28,8 +28,16 @@ def banner(title: str) -> None:
 
 
 # Identity factors the customer supplied at the pre-dispute verification gate.
-EID_A = dict(provided_emirates_id="784-1989-1234567-1", otp_verified=True)
-EID_B = dict(provided_emirates_id="784-1992-7654321-2", otp_verified=True)
+EID_A = dict(
+    provided_emirates_id="784-1989-1234567-1",
+    provided_email="omar.alfarsi.new@example.com",
+    otp_verified=True,
+)
+EID_B = dict(
+    provided_emirates_id="784-1992-7654321-2",
+    provided_email="sara.haddad@example.com",
+    otp_verified=True,
+)
 
 
 def main() -> None:
